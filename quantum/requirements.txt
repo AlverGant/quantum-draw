@@ -1,0 +1,4 @@
+# Só é necessário para coletar da IBM Quantum (--source ibm).
+# As fontes ANU e local rodam apenas com a stdlib.
+qiskit>=2.3.0
+qiskit-ibm-runtime>=0.49.0

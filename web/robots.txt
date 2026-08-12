@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /$
+Allow: /verificar
+Allow: /assets/
+
+# Páginas de sorteio são conteúdo de usuário: milhares de URLs com o mesmo
+# layout e nomes de terceiros. Indexá-las diluiria o site e exporia listas de
+# participantes na busca. Continuam acessíveis por link.
+Disallow: /s/
+
+# A API não é conteúdo.
+Disallow: /api/
+
+Sitemap: https://sorteio.vynstream.com/sitemap.xml

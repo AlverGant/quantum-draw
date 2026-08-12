@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="pt" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Gerador de jogos da Dia de Sorte — números quânticos com prova</title>
+<meta name="description" content="Gere jogos da Dia de Sorte com números vindos de medição quântica em hardware da IBM. Prova pública de que os números saíram antes do sorteio. Grátis.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#06070d">
+<link rel="canonical" href="https://sorteio.vynstream.com/pt/dia-de-sorte">
+<meta property="og:title" content="Gerador de jogos da Dia de Sorte — números quânticos com prova">
+<meta property="og:description" content="Gere jogos da Dia de Sorte com números vindos de medição quântica em hardware da IBM. Prova pública de que os números saíram antes do sorteio. Grátis.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://sorteio.vynstream.com/pt/dia-de-sorte">
+<meta property="og:image" content="https://sorteio.vynstream.com/assets/og.png">
+<meta property="og:locale" content="pt_BR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://sorteio.vynstream.com/assets/og.png">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="/assets/favicon.ico" sizes="any">
+<link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/icon-180.png">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "O gerador aumenta minha chance na Dia de Sorte?", "acceptedAnswer": {"@type": "Answer", "text": "Não. Nenhum método aumenta. A chance é a mesma de qualquer combinação, sorteada por computador quântico ou escolhida de cabeça. O que o site entrega é outra coisa: prova de quando os números foram gerados."}}, {"@type": "Question", "name": "Para que serve a prova, então?", "acceptedAnswer": {"@type": "Answer", "text": "Para bolão. Como o compromisso com os números é registrado antes de a aleatoriedade existir, dá para demonstrar ao grupo que o organizador não escolheu as dezenas depois de ver o resultado da Caixa."}}, {"@type": "Question", "name": "Quantos números posso marcar na Dia de Sorte?", "acceptedAnswer": {"@type": "Answer", "text": "Marque de 7 a 15 números entre os 31 do volante e um Mês da Sorte. São sorteadas 7 dezenas e um mês."}}, {"@type": "Question", "name": "Os números são mesmo quânticos?", "acceptedAnswer": {"@type": "Answer", "text": "São. Qubits de um processador da IBM são colocados em superposição e medidos; o resultado de cada medição é um bit. A prova de cada geração traz o identificador do job executado na IBM."}}]}</script>
+</head>
+<body>
+<div class="veil" aria-hidden="true"></div>
+
+<header>
+  <div class="wrap bar">
+    <a class="brand" href="/pt/">
+      <svg width="27" height="27" viewBox="0 0 32 32" aria-hidden="true">
+        <circle cx="16" cy="16" r="13" fill="none" stroke="#8b6cf6" stroke-width="2.2"/>
+        <ellipse cx="16" cy="16" rx="13" ry="5" fill="none" stroke="#35e6d4" stroke-width="1.8"/>
+        <circle cx="16" cy="16" r="3.4" fill="#f062a6"/>
+      </svg>
+      <span>Quantum Draw</span>
+    </a>
+    <nav class="links">
+      <a href="/pt/">Sortear</a>
+      <a href="/verificar">Verificar</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<section class="hero" style="padding:64px 0 30px">
+  <div class="wrap" style="max-width:760px">
+    <span class="eyebrow"><i class="dot"></i>Entropia quântica ao vivo</span>
+    <h1 style="font-size:clamp(1.9rem,4.6vw,2.9rem)">Gerador de jogos da <em>Dia de Sorte</em></h1>
+    <p class="lede">Dezenas geradas por medição quântica em hardware real da IBM, com prova
+      pública de que saíram antes do sorteio. De graça, sem cadastro.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="/pt/?lottery=diadesorte#create">Gerar meus jogos</a>
+      <a class="btn btn-ghost" href="/pt/#how">Como funciona</a>
+    </div>
+  </div>
+</section>
+
+<section style="padding:26px 0">
+  <div class="wrap" style="max-width:760px">
+    <div class="card">
+      <h2 style="font-size:1.3rem;text-align:start">Como se joga na Dia de Sorte</h2>
+      <p style="color:var(--text-dim)">Marque de 7 a 15 números entre os 31 do volante e um Mês da Sorte. São sorteadas 7 dezenas e um mês.</p>
+      <p style="color:var(--text-dim)">Os números vão só até 31 porque representam dias do mês.</p>
+      <p style="color:var(--text-dim)">O Mês da Sorte entra no sorteio junto com as dezenas.</p>
+    </div>
+
+    <div class="card" style="margin-top:18px">
+      <h2 style="font-size:1.3rem;text-align:start">Qual a chance real</h2>
+      <p style="color:var(--text-dim);font-size:.92rem">Probabilidade de acertar o prêmio
+        máximo, por quantidade marcada. A melhor aposta desta tabela ainda é
+        <strong style="color:var(--cyan)">1 em 4.903</strong>.</p>
+      <table class="odds">
+        <thead><tr><th>números marcados</th><th>chance</th></tr></thead>
+        <tbody>
+        <tr><td>7</td><td>1 em 31.554.900</td></tr>
+        <tr><td>8</td><td>1 em 3.944.362</td></tr>
+        <tr><td>9</td><td>1 em 876.525</td></tr>
+        <tr><td>10</td><td>1 em 262.957</td></tr>
+        <tr><td>11</td><td>1 em 95.620</td></tr>
+        <tr><td>12</td><td>1 em 39.842</td></tr>
+        <tr><td>13</td><td>1 em 18.388</td></tr>
+        <tr><td>14</td><td>1 em 9.194</td></tr>
+        <tr><td>15</td><td>1 em 4.903</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:18px">
+      <h2 style="font-size:1.3rem;text-align:start">O que a prova garante — e o que não garante</h2>
+      <p style="color:var(--text-dim)"><strong style="color:var(--text)">Não garante</strong>
+        chance melhor. Nenhum gerador garante, e quem prometer isso está mentindo. As
+        combinações são todas igualmente improváveis.</p>
+      <p style="color:var(--text-dim)"><strong style="color:var(--text)">Garante</strong> que
+        os números existiam antes do sorteio da Caixa. A semente mistura um pulso quântico
+        selado sob uma raiz de Merkle publicada de antemão com um round futuro do drand,
+        um farol público que ninguém consegue prever. Como o compromisso é registrado
+        antes de esse round existir, ninguém — nem nós — poderia ter escolhido as dezenas.</p>
+      <p style="color:var(--text-dim)">Isso resolve um problema concreto de bolão: provar ao
+        grupo que o organizador não montou o jogo depois de ver o resultado.</p>
+      <a class="btn btn-ghost btn-sm" href="/verificar">Ver como a verificação funciona</a>
+    </div>
+
+    <div class="card" style="margin-top:18px">
+      <h2 style="font-size:1.3rem;text-align:start">Perguntas frequentes</h2>
+      <details class="order"><summary>O gerador aumenta minha chance na Dia de Sorte?</summary><p style="color:var(--text-dim);font-size:.92rem;padding:6px 0 14px">Não. Nenhum método aumenta. A chance é a mesma de qualquer combinação, sorteada por computador quântico ou escolhida de cabeça. O que o site entrega é outra coisa: prova de quando os números foram gerados.</p></details>
+      <details class="order"><summary>Para que serve a prova, então?</summary><p style="color:var(--text-dim);font-size:.92rem;padding:6px 0 14px">Para bolão. Como o compromisso com os números é registrado antes de a aleatoriedade existir, dá para demonstrar ao grupo que o organizador não escolheu as dezenas depois de ver o resultado da Caixa.</p></details>
+      <details class="order"><summary>Quantos números posso marcar na Dia de Sorte?</summary><p style="color:var(--text-dim);font-size:.92rem;padding:6px 0 14px">Marque de 7 a 15 números entre os 31 do volante e um Mês da Sorte. São sorteadas 7 dezenas e um mês.</p></details>
+      <details class="order"><summary>Os números são mesmo quânticos?</summary><p style="color:var(--text-dim);font-size:.92rem;padding:6px 0 14px">São. Qubits de um processador da IBM são colocados em superposição e medidos; o resultado de cada medição é um bit. A prova de cada geração traz o identificador do job executado na IBM.</p></details>
+    </div>
+
+    <h2 style="font-size:1.2rem;margin:34px 0 14px">Outras loterias</h2>
+    <div class="recent-grid">
+        <a class="recent-card" href="/pt/mega-sena"><h4>Mega-Sena</h4><div class="meta">1 em 50.063.860 · 6 números</div></a>
+        <a class="recent-card" href="/pt/lotofacil"><h4>Lotofácil</h4><div class="meta">1 em 3.268.760 · 15 números</div></a>
+        <a class="recent-card" href="/pt/quina"><h4>Quina</h4><div class="meta">1 em 24.040.016 · 5 números</div></a>
+        <a class="recent-card" href="/pt/lotomania"><h4>Lotomania</h4><div class="meta">1 em 11.372.635 · 50 números</div></a>
+        <a class="recent-card" href="/pt/dupla-sena"><h4>Dupla Sena</h4><div class="meta">1 em 15.890.700 · 6 números</div></a>
+        <a class="recent-card" href="/pt/timemania"><h4>Timemania</h4><div class="meta">1 em 26.472.636 · 10 números</div></a>
+        <a class="recent-card" href="/pt/super-sete"><h4>Super Sete</h4><div class="meta">1 em 10.000.000 · 1 algarismo por coluna</div></a>
+        <a class="recent-card" href="/pt/mais-milionaria"><h4>+Milionária</h4><div class="meta">1 em 238.360.500 · 6 números + 2 trevos</div></a>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Entropia quântica de hardware da IBM, selada sob raiz de Merkle, misturada a um farol público do drand.</span>
+    <span><a href="mailto:contact@stellardev.dev">contact@stellardev.dev</a></span>
+  </div>
+</footer>
+</body>
+</html>

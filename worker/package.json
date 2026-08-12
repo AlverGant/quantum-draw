@@ -1,0 +1,23 @@
+{
+  "name": "sorteio-quantico",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npm run build:protocol && npm run build:pages && wrangler dev",
+    "deploy": "npm run build:protocol && npm run build:pages && npm test && wrangler deploy",
+    "build:pages": "python3 ../scripts/build_pages.py",
+    "build:protocol": "esbuild src/browser.ts --bundle --format=esm --target=es2022 --outfile=../web/protocol.js --banner:js=\"/* GERADO por: npm run build:protocol — a fonte e worker/src/browser.ts. Nao editar. */\"",
+    "tail": "wrangler tail",
+    "test": "node --experimental-strip-types --no-warnings --test test/*.test.mjs",
+    "typecheck": "tsc --noEmit",
+    "db:local": "wrangler d1 execute qdraw --local --file=./schema.sql",
+    "db:remote": "wrangler d1 execute qdraw --remote --file=./schema.sql"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260804.1",
+    "esbuild": "^0.25.0",
+    "typescript": "^5.8.0",
+    "wrangler": "^4.121.0"
+  }
+}

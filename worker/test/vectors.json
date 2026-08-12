@@ -1,0 +1,606 @@
+{
+  "lottery": {
+    "seed": "b08598b72c259bc8b7e2e42a529ff8cd618a26e20da37ad2f45154534fd7c924",
+    "catalog": {
+      "megasena": {
+        "lo": 1,
+        "hi": 60,
+        "min": 6,
+        "max": 20,
+        "default": 6
+      },
+      "lotofacil": {
+        "lo": 1,
+        "hi": 25,
+        "min": 15,
+        "max": 20,
+        "default": 15
+      },
+      "quina": {
+        "lo": 1,
+        "hi": 80,
+        "min": 5,
+        "max": 15,
+        "default": 5
+      },
+      "lotomania": {
+        "lo": 0,
+        "hi": 99,
+        "min": 50,
+        "max": 50,
+        "default": 50
+      },
+      "duplasena": {
+        "lo": 1,
+        "hi": 50,
+        "min": 6,
+        "max": 15,
+        "default": 6
+      },
+      "timemania": {
+        "lo": 1,
+        "hi": 80,
+        "min": 10,
+        "max": 10,
+        "default": 10
+      },
+      "diadesorte": {
+        "lo": 1,
+        "hi": 31,
+        "min": 7,
+        "max": 15,
+        "default": 7,
+        "extra": "mes"
+      },
+      "maismilionaria": {
+        "lo": 1,
+        "hi": 50,
+        "min": 6,
+        "max": 12,
+        "default": 6,
+        "extra": "trevos",
+        "extra_lo": 1,
+        "extra_hi": 6,
+        "extra_min": 2,
+        "extra_max": 6,
+        "extra_default": 2
+      },
+      "supersete": {
+        "lo": 0,
+        "hi": 9,
+        "min": 1,
+        "max": 3,
+        "default": 1,
+        "columns": 7
+      }
+    },
+    "meses": [
+      "Janeiro",
+      "Fevereiro",
+      "Março",
+      "Abril",
+      "Maio",
+      "Junho",
+      "Julho",
+      "Agosto",
+      "Setembro",
+      "Outubro",
+      "Novembro",
+      "Dezembro"
+    ],
+    "cases": {
+      "megasena": {
+        "games": 3,
+        "picks": null,
+        "extra_picks": null,
+        "result": [
+          {
+            "numbers": [
+              6,
+              11,
+              14,
+              18,
+              36,
+              46
+            ]
+          },
+          {
+            "numbers": [
+              8,
+              10,
+              22,
+              28,
+              50,
+              58
+            ]
+          },
+          {
+            "numbers": [
+              1,
+              38,
+              49,
+              51,
+              57,
+              60
+            ]
+          }
+        ]
+      },
+      "lotofacil": {
+        "games": 2,
+        "picks": 15,
+        "extra_picks": null,
+        "result": [
+          {
+            "numbers": [
+              1,
+              3,
+              4,
+              5,
+              9,
+              10,
+              11,
+              13,
+              16,
+              17,
+              18,
+              19,
+              21,
+              23,
+              24
+            ]
+          },
+          {
+            "numbers": [
+              2,
+              3,
+              5,
+              6,
+              10,
+              11,
+              14,
+              15,
+              16,
+              17,
+              21,
+              22,
+              23,
+              24,
+              25
+            ]
+          }
+        ]
+      },
+      "quina": {
+        "games": 2,
+        "picks": 7,
+        "extra_picks": null,
+        "result": [
+          {
+            "numbers": [
+              1,
+              6,
+              16,
+              20,
+              30,
+              41,
+              77
+            ]
+          },
+          {
+            "numbers": [
+              9,
+              10,
+              12,
+              17,
+              65,
+              75,
+              79
+            ]
+          }
+        ]
+      },
+      "lotomania": {
+        "games": 1,
+        "picks": null,
+        "extra_picks": null,
+        "result": [
+          {
+            "numbers": [
+              0,
+              1,
+              4,
+              5,
+              6,
+              7,
+              8,
+              10,
+              12,
+              13,
+              14,
+              15,
+              17,
+              18,
+              19,
+              23,
+              24,
+              25,
+              26,
+              27,
+              29,
+              30,
+              31,
+              35,
+              44,
+              47,
+              49,
+              51,
+              52,
+              54,
+              55,
+              58,
+              61,
+              64,
+              69,
+              70,
+              71,
+              73,
+              78,
+              79,
+              80,
+              81,
+              84,
+              88,
+              89,
+              90,
+              92,
+              93,
+              94,
+              95
+            ]
+          }
+        ]
+      },
+      "duplasena": {
+        "games": 2,
+        "picks": 6,
+        "extra_picks": null,
+        "result": [
+          {
+            "numbers": [
+              14,
+              19,
+              26,
+              32,
+              36,
+              44
+            ]
+          },
+          {
+            "numbers": [
+              1,
+              22,
+              28,
+              35,
+              36,
+              38
+            ]
+          }
+        ]
+      },
+      "timemania": {
+        "games": 2,
+        "picks": null,
+        "extra_picks": null,
+        "result": [
+          {
+            "numbers": [
+              1,
+              6,
+              16,
+              20,
+              30,
+              34,
+              41,
+              64,
+              73,
+              77
+            ]
+          },
+          {
+            "numbers": [
+              11,
+              14,
+              28,
+              38,
+              46,
+              53,
+              54,
+              55,
+              59,
+              62
+            ]
+          }
+        ]
+      },
+      "diadesorte": {
+        "games": 2,
+        "picks": 7,
+        "extra_picks": null,
+        "result": [
+          {
+            "numbers": [
+              5,
+              6,
+              9,
+              18,
+              21,
+              28,
+              29
+            ],
+            "mes": "Agosto"
+          },
+          {
+            "numbers": [
+              4,
+              7,
+              8,
+              10,
+              11,
+              27,
+              28
+            ],
+            "mes": "Março"
+          }
+        ]
+      },
+      "maismilionaria": {
+        "games": 2,
+        "picks": 6,
+        "extra_picks": 3,
+        "result": [
+          {
+            "numbers": [
+              14,
+              19,
+              26,
+              32,
+              36,
+              44
+            ],
+            "trevos": [
+              1,
+              3,
+              4
+            ]
+          },
+          {
+            "numbers": [
+              17,
+              25,
+              27,
+              41,
+              49,
+              50
+            ],
+            "trevos": [
+              1,
+              3,
+              5
+            ]
+          }
+        ]
+      },
+      "supersete": {
+        "games": 2,
+        "picks": 2,
+        "extra_picks": null,
+        "result": [
+          {
+            "columns": [
+              [
+                1,
+                5
+              ],
+              [
+                5,
+                8
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                3,
+                5
+              ],
+              [
+                6,
+                9
+              ]
+            ]
+          },
+          {
+            "columns": [
+              [
+                1,
+                3
+              ],
+              [
+                5,
+                8
+              ],
+              [
+                0,
+                8
+              ],
+              [
+                0,
+                5
+              ],
+              [
+                0,
+                7
+              ],
+              [
+                1,
+                5
+              ],
+              [
+                2,
+                6
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "commit": "1178c692cb54edbc851839f88b24b19b399314d5df52cea49292f8bbe8348181"
+  },
+  "pool_build": {
+    "raw_bits": 28262,
+    "raw_prefix_hex": "04fcd8dea7738c4b8f27f6562e2f6ce4b907c91f17a6ebe7ad4f36945fa89c34",
+    "von_neumann_bits": 7144,
+    "von_neumann_hex": "2e5c8f6c86f630f244a06e2f81deba0056ffb6a7f9015e9059f3a38ea9cd9f7f7c361f8e1829f2c8e6555aa163bcb4c88904922d9e30e78310d1b8efdaf14c652979df12c9302834f8ac30d114782c409ab45b858166a21cec705de22f6f237f3107db78aaa9e02f4399df38663a0dd429e45c41dafe3b58ca1afe3a9a61576bc4e08cbd1fee0fb88e2856f8dca64ff3aa9c3bce25023837f367ae8b405b8831ea36aef523764eb599693fdbae2e7f73848da99d0d3c015c625c1f140828f1dbc3a792ea463a8c4f0fa13c9a3c271d5fa5a5434cf57a09737cd76272adec882d969cb9ad3a353dc08beb2294b916bb8caa3b400cbf7ce3381d1db53cef83894c0b69015cea85dc78517d36e1a924d8a353487045c5d0f04423daaacaede3104bbac2c5d44792d9f6f4985f5e883d598d3b9fe82349069f624118e9c53b0b9903ddb02e3c581cbf735c5c73f32a03091232bd21230c5cd314e9300ea3f26cc11cc95f05ea436ba1f767a5b78f2ac5143c9f4f2cf6715e94dbfb92e5cda3e4caae45bb959fe8d88186ad0219c8de6d70bccd3cb7a193d15fde62dbb79050193093d68a96bef1cc381950e03bfe7a92c41efe43eb0f553f6a41366aba65b67243bbce6a28e952def2550892674c3b193fa2c90ede2e790b2d84bb33bfa1e0a3178c06cb8822f63d9ca18efda481302ed9ffa65967126b9e67e9e9878f50ec5fc7cd59495cc96c71a1e5806bfcae613b33388829e00990e9367bf75a545a2789cf15f25d8b7f00da815d84efa73fad3035399d9f2a99ac38ba5c1bda0669e8d707982c4848340b239863a41cb827ba13503ba2cd9d3741bf16e74843e8f8f4c7d40dad2fa7bdfa5ab930151619562c7112f3d64a1b182bb98be3d8014ceaabac1c6a2fff88998a3897729377b5dbde0f65b063d0b1b9ca9150acd134436724865b3dad9ca1413c1a4fd87fc3d0214d1a52aace876734c85870360799dd2cf35fdfeb096a8455f69f573832fc1f01df40c2cdbcf2755d6f5de35c29c5257ac4fd41a51b4e1df3456c71c086a1630d407677596a5dfa2f2c3fa44bbb6a1ab09941d7630b2bbe8cd41cb0d487dce81dc609ee01c49ac35ddb49b826bfd37c7a060ac09571248dacb717576de73de904ca4a00bf129cd797be969c6750a76c4244515f9f79fbc0a3c1be3e5877a305158b33f6961d78d99601431bbae88d460b7a5ecc36fae85264decbed8966ca4a61a8b028269e2a483c8eddc4138660beaeb4",
+    "conditioned_hex": "8e5d2e1aa7a53469526bbc4e33362a1bd079c46c6c142fb0284080c436ef2c027c4e8ed6e380462325888e69d9d5794bd358a17ebbfc7920267ab9427febb20ea4095f9555f97f93a3ee529b4a0a3ff8d39fec2df5e05cac65fbc563045f8ffbc99968956735a5f237264a6c1977e0bb1a40f9a4be1ce753c58a39ccdbd56fd01a977f2273c3b66740dfdd79d40b876e523c78309c1acadcfe3e864401d59c6b3bbc69002f74a58f688dff6799aa3a7578ba5de0fc0b9f0c4668786111804e42331e46addab3bba2e59d5c5f47313565513a815a439c2d6d8fbe6c10835dfd26157cee3ead21d2159ecb82754e767cf548e34d78051a4ee8659cda40417d558245b68a8187ed39e347b54c3afe2aeed7d1227120129048789575d1c4bb6bcb3ce3c073ccc2621df9982efa85222dba998c91f542e89e8edc82f257283abd95ce8ac2a0ad30454be4a037de78e5bfb8bff58ee568ae0a20191eba2b96482b094ab3198f2d78dcd830ab5bd67720d66d21f9074671d278c8f8c1c72d7cc5acd135",
+    "pulse_count": 12,
+    "period": 60,
+    "genesis_time": 1800000000,
+    "pool_id": "9a8b8695d101fd0c",
+    "merkle_root": "26cd8654fe0cb8e7fcbd12b2a9a3a7eade50049e2e586e5b87dd014a44484b0e",
+    "pulses": [
+      "8e5d2e1aa7a53469526bbc4e33362a1bd079c46c6c142fb0284080c436ef2c02",
+      "7c4e8ed6e380462325888e69d9d5794bd358a17ebbfc7920267ab9427febb20e",
+      "a4095f9555f97f93a3ee529b4a0a3ff8d39fec2df5e05cac65fbc563045f8ffb",
+      "c99968956735a5f237264a6c1977e0bb1a40f9a4be1ce753c58a39ccdbd56fd0",
+      "1a977f2273c3b66740dfdd79d40b876e523c78309c1acadcfe3e864401d59c6b",
+      "3bbc69002f74a58f688dff6799aa3a7578ba5de0fc0b9f0c4668786111804e42",
+      "331e46addab3bba2e59d5c5f47313565513a815a439c2d6d8fbe6c10835dfd26",
+      "157cee3ead21d2159ecb82754e767cf548e34d78051a4ee8659cda40417d5582",
+      "45b68a8187ed39e347b54c3afe2aeed7d1227120129048789575d1c4bb6bcb3c",
+      "e3c073ccc2621df9982efa85222dba998c91f542e89e8edc82f257283abd95ce",
+      "8ac2a0ad30454be4a037de78e5bfb8bff58ee568ae0a20191eba2b96482b094a",
+      "b3198f2d78dcd830ab5bd67720d66d21f9074671d278c8f8c1c72d7cc5acd135"
+    ]
+  },
+  "protocol": "qdraw-v1",
+  "note": "Gerado por quantum/selftest.py --emit. Não editar à mão.",
+  "sha256_empty": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "merkle": {
+    "pulses": [
+      "e0d0e77bc43acc929f29d0fe0799264266648688a68db51fac080086d0c7458c",
+      "6ddb3e9b81909f4e25897ad08165afa0dc327da0b8ff7c2390a18158325b2279",
+      "0099631eda787f8164b9768f101034da71cd5ccd50c8f5a73eedbaf1bc8dc819",
+      "ef0ad0f058315a78bef24418ca93081448189d1987835005e35fb7dc8e28afd7",
+      "687b04310083c68492b0a097da031698982983d42e5af6195c4d8033b8da35f1",
+      "4077dac2ec593f50668690acf88a69e4847dba3dcced59d09ff88cfb01ef235d",
+      "5a32bc8e5ee546535ef29e94c709a5cc3cffb309d85db317497f674c58cfe45c",
+      "136105ba5c7c0572d90cfae75052a4f3762042063fcbfd42548569549bba29d8",
+      "0dfc9953396339174aace48293c8954ee999ef8172b645cbf015ecbddb49fc08"
+    ],
+    "root": "a2cef3fa98039deeb426b42f8b3a17abd257454db534ccc63f15c2f139b926ca",
+    "index": 3,
+    "proof": [
+      {
+        "hash": "0746d2c82b972802a9a9394d73b540cc5e3852c760413fe5221a9e84f5ccd574",
+        "left": true
+      },
+      {
+        "hash": "2242716a3ebc2fc2bd04116325e9054ce30588fe9b664b40685d99473f64937a",
+        "left": true
+      },
+      {
+        "hash": "5320135901b2e40d32ac2d66576a701bd9e2902106862f61b9ca3444c3eb7bc1",
+        "left": false
+      },
+      {
+        "hash": "4c1fd295b307419bb89911ed6d8fa1af60008b97fc3e6279225c64d03c5b35c3",
+        "left": false
+      }
+    ]
+  },
+  "participants": [
+    "Ana",
+    "Bruno",
+    "Carla",
+    "Diego",
+    "Élia",
+    "Fábio",
+    "Gina",
+    "Hugo",
+    "Íris",
+    "João",
+    "Kátia",
+    "Lucas"
+  ],
+  "participants_hash": "fb03f96ce8fe9d0aec98618ccbeb850f62b837d62f591b3b976e87bf1f996009",
+  "commit": {
+    "title": "Sorteio de teste",
+    "winners_count": 3,
+    "client_nonce": "00112233445566778899aabbccddeeff",
+    "pool_id": "deadbeefcafe0001",
+    "pulse_index": 3,
+    "drand_round": 31237368,
+    "hash": "3dd9c873045f0be72aadf334c5ff0fe3b868c48412d4874eb6ceaf768b9b1123"
+  },
+  "drand": {
+    "signature": "8fde280eba167af1a961f135a5bac89cb3e0b1e5d6b24d9768f03b478e3242f349c275c19a3dad43819540f4fa08f681",
+    "randomness": "fc4b6e2e6b734429d796282a36a1d41668a74a25a0d2b817762735da14125324"
+  },
+  "draw": {
+    "pulse": "ef0ad0f058315a78bef24418ca93081448189d1987835005e35fb7dc8e28afd7",
+    "seed": "068d6a1af5913ef7340fdba3c5ddacaff56b118e73f0b7297d82e376cd2074ea",
+    "order": [
+      "Diego",
+      "Fábio",
+      "Carla",
+      "Élia",
+      "Íris",
+      "Bruno",
+      "Ana",
+      "João",
+      "Gina",
+      "Lucas",
+      "Hugo",
+      "Kátia"
+    ],
+    "winners": [
+      "Diego",
+      "Fábio",
+      "Carla"
+    ]
+  },
+  "drbg": {
+    "seed": "e40af23c2ad330f2dd2fa5c293a0fc02339c7dda245f17c0cc6e312759eef30b",
+    "first_u32": [
+      2815908603,
+      1732073748,
+      905293572,
+      2015279561,
+      3479673528,
+      471541450,
+      3367885130,
+      519656660
+    ],
+    "below_60": 3
+  },
+  "normalization": {
+    "input": [
+      "  Ana  Maria ",
+      "",
+      "José"
+    ],
+    "output": [
+      "Ana Maria",
+      "José"
+    ]
+  }
+}

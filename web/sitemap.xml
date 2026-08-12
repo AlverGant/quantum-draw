@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Gerado por scripts/build_pages.py. Não editar à mão. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://sorteio.vynstream.com/</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://sorteio.vynstream.com/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://sorteio.vynstream.com/"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://sorteio.vynstream.com/pt/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://sorteio.vynstream.com/es/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://sorteio.vynstream.com/fr/"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://sorteio.vynstream.com/zh/"/>
+    <xhtml:link rel="alternate" hreflang="hi" href="https://sorteio.vynstream.com/hi/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://sorteio.vynstream.com/ar/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://sorteio.vynstream.com/ru/"/>
+  </url>
+  <url>
+    <loc>https://sorteio.vynstream.com/pt/</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://sorteio.vynstream.com/es/</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://sorteio.vynstream.com/fr/</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://sorteio.vynstream.com/zh/</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://sorteio.vynstream.com/hi/</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://sorteio.vynstream.com/ar/</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://sorteio.vynstream.com/ru/</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://sorteio.vynstream.com/pt/mega-sena</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sorteio.vynstream.com/pt/lotofacil</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sorteio.vynstream.com/pt/quina</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sorteio.vynstream.com/pt/lotomania</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sorteio.vynstream.com/pt/dupla-sena</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sorteio.vynstream.com/pt/timemania</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sorteio.vynstream.com/pt/dia-de-sorte</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sorteio.vynstream.com/pt/super-sete</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sorteio.vynstream.com/pt/mais-milionaria</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sorteio.vynstream.com/verificar</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+</urlset>

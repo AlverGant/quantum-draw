@@ -1,0 +1,43 @@
+name = "sorteio-quantico"
+main = "src/index.ts"
+compatibility_date = "2025-04-01"
+
+# O site inteiro sai do mesmo Worker: assets estáticos + API na mesma origem.
+# Sem Pages separado, sem CORS, um único `wrangler deploy`.
+[assets]
+directory = "../web"
+binding = "ASSETS"
+# Caminho inexistente devolve 404 de verdade. Com o fallback de SPA anterior,
+# qualquer URL errada respondia 200 com o index.html — o "soft 404" que faz o
+# Google indexar lixo e reclamar no Search Console.
+not_found_handling = "404-page"
+# A API e as páginas de sorteio precisam chegar no Worker: /s/<código> não é
+# arquivo, e só o banco sabe se aquele código existe.
+run_worker_first = ["/api/*", "/s/*"]
+
+# Domínio próprio. `custom_domain = true` faz o Wrangler criar o registro DNS
+# e o certificado sozinho — exige que a zona vynstream.com esteja nesta conta.
+[[routes]]
+pattern = "sorteio.vynstream.com"
+custom_domain = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "qdraw"
+database_id = "ca00a664-c4e7-4be0-9a63-bcd724661b0e"
+
+[triggers]
+# Varre sorteios cujo horário chegou e ninguém abriu a página para disparar.
+crons = ["*/5 * * * *"]
+
+[vars]
+# Segundos entre a criação do sorteio e o pulso que vai decidi-lo. Só precisa
+# ser maior que o período do drand (3s) mais folga para desvio de relógio — o
+# que manda na espera real é o período do pulso, de 60s. Com 15s aqui a espera
+# fica entre 15s e 75s; com os 120s anteriores ia de 120s a 180s.
+LOCK_SECONDS = "15"
+MAX_PARTICIPANTS = "20000"
+
+# Secrets (npx wrangler secret put NOME):
+#   ADMIN_TOKEN   — autoriza POST /api/admin/pool (usado pelo harvest.py)
+#   VISITOR_SALT  — sal do hash de visitante único; troque e a contagem reinicia

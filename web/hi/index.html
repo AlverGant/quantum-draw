@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="hi" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>क्वांटम ड्रॉ — सार्वजनिक प्रमाण वाला ऑनलाइन ड्रॉ</title>
+<meta name="description" id="meta-desc" content="मुफ़्त ऑनलाइन लकी ड्रॉ, जिसके नंबर IBM के असली क्वांटम हार्डवेयर पर मापन से आते हैं, ऐसे प्रमाण के साथ जिसे कोई भी जाँच सकता है।">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#06070d">
+<link rel="canonical" href="https://sorteio.vynstream.com/hi/">
+
+<!-- Uma página serve os 8 idiomas e troca por JS. hreflang diz ao Google que
+     é conteúdo equivalente, não duplicado, e qual servir a cada região. -->
+<link rel="alternate" hreflang="x-default" href="https://sorteio.vynstream.com/">
+<link rel="alternate" hreflang="en" href="https://sorteio.vynstream.com/?lang=en">
+<link rel="alternate" hreflang="pt" href="https://sorteio.vynstream.com/?lang=pt">
+<link rel="alternate" hreflang="es" href="https://sorteio.vynstream.com/?lang=es">
+<link rel="alternate" hreflang="fr" href="https://sorteio.vynstream.com/?lang=fr">
+<link rel="alternate" hreflang="zh" href="https://sorteio.vynstream.com/?lang=zh">
+<link rel="alternate" hreflang="hi" href="https://sorteio.vynstream.com/?lang=hi">
+<link rel="alternate" hreflang="ar" href="https://sorteio.vynstream.com/?lang=ar">
+<link rel="alternate" hreflang="ru" href="https://sorteio.vynstream.com/?lang=ru">
+
+<meta property="og:title" content="क्वांटम ड्रॉ — सार्वजनिक प्रमाण वाला ऑनलाइन ड्रॉ">
+<meta property="og:description" content="मुफ़्त ऑनलाइन लकी ड्रॉ, जिसके नंबर IBM के असली क्वांटम हार्डवेयर पर मापन से आते हैं, ऐसे प्रमाण के साथ जिसे कोई भी जाँच सकता है।">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://sorteio.vynstream.com/hi/">
+<meta property="og:locale" content="hi_IN">
+<meta property="og:image" content="https://sorteio.vynstream.com/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:site_name" content="Quantum Draw">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Quantum Draw — provably fair raffles">
+<meta name="twitter:description" content="Raffles and lottery numbers from real quantum hardware, with a proof anyone can verify.">
+<meta name="twitter:image" content="https://sorteio.vynstream.com/assets/og.png">
+
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="/assets/favicon.ico" sizes="any">
+<link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/icon-180.png">
+<link rel="manifest" href="/site.webmanifest">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Quantum Draw",
+  "url": "https://sorteio.vynstream.com/",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "description": "Raffles and lottery number generation decided by quantum measurement on IBM hardware, with a publicly verifiable proof.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "featureList": [
+    "Provably fair raffle from a list of participants",
+    "Caixa lottery number generation",
+    "Independent verification in the browser",
+    "Quantum entropy from IBM Quantum hardware",
+    "Public drand beacon mixed into every seed"
+  ]
+}
+</script>
+</head>
+<body>
+
+<canvas id="field" aria-hidden="true"></canvas>
+<div class="veil" aria-hidden="true"></div>
+
+<header>
+  <div class="wrap bar">
+    <a class="brand" href="/" data-nav>
+      <svg width="27" height="27" viewBox="0 0 32 32" aria-hidden="true">
+        <circle cx="16" cy="16" r="13" fill="none" stroke="#8b6cf6" stroke-width="2.2"/>
+        <ellipse cx="16" cy="16" rx="13" ry="5" fill="none" stroke="#35e6d4" stroke-width="1.8"/>
+        <ellipse cx="16" cy="16" rx="5" ry="13" fill="none" stroke="#35e6d4" stroke-width="1.8" opacity=".5"/>
+        <circle cx="16" cy="16" r="3.4" fill="#f062a6"/>
+      </svg>
+      <span>Quantum Draw</span>
+    </a>
+
+    <nav class="links">
+      <a href="/#create"   data-nav data-i18n="nav.create">Create</a>
+      <a href="/#how"      data-nav data-i18n="nav.how">How it works</a>
+      <a href="/verificar" data-nav data-i18n="nav.verify">Verify</a>
+
+      <div class="lang" id="lang">
+        <button type="button" id="lang-btn" aria-haspopup="true" aria-expanded="false">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20a15 15 0 0 1 0-20"/>
+          </svg>
+          <span id="lang-current">English</span>
+        </button>
+        <ul id="lang-list" role="menu"></ul>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- ============================================================ HOME -->
+<div id="view-home">
+
+  <section class="hero">
+    <div class="wrap">
+      <span class="eyebrow"><i class="dot"></i><span data-i18n="hero.badge">Live quantum entropy</span></span>
+      <h1><span data-i18n="hero.h1a">Raffles nobody can</span> <em data-i18n="hero.h1em">rig</em></h1>
+      <p class="lede" data-i18n="hero.lede"></p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="/#create" data-nav data-i18n="hero.cta">Run a draw</a>
+        <a class="btn btn-ghost" href="/verificar" data-nav data-i18n="hero.cta2">Verify a draw</a>
+      </div>
+
+      <div class="stats" id="stats">
+        <div class="stat-card"><span class="n" data-stat="unique_visitors">—</span><span class="k" data-i18n="stats.visitors">Visitors</span></div>
+        <div class="stat-card"><span class="n" data-stat="pageviews">—</span><span class="k" data-i18n="stats.pageviews">Page views</span></div>
+        <div class="stat-card"><span class="n" data-stat="draws_completed">—</span><span class="k" data-i18n="stats.draws">Draws held</span></div>
+        <div class="stat-card"><span class="n" data-stat="participants_total">—</span><span class="k" data-i18n="stats.participants">Entries</span></div>
+        <div class="stat-card"><span class="n" data-stat="countries">—</span><span class="k" data-i18n="stats.countries">Countries</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="create">
+    <div class="wrap">
+      <h2 data-i18n="form.h2">Create a draw</h2>
+      <p class="sub" data-i18n="form.sub"></p>
+
+      <div class="card form-card">
+        <div id="pool-note"></div>
+        <div id="form-error" class="alert alert-error hide"></div>
+
+        <div class="modes" role="tablist">
+          <button type="button" class="mode on" data-mode="list" role="tab" data-i18n="mode.list">Draw from a list</button>
+          <button type="button" class="mode" data-mode="lottery" role="tab" data-i18n="mode.lottery">Generate lottery games</button>
+        </div>
+
+        <form id="draw-form" novalidate>
+          <div class="field">
+            <label for="f-title" data-i18n="form.titleOpt">What is the draw for? (optional)</label>
+            <input type="text" id="f-title" maxlength="140" data-i18n-ph="form.titlePh">
+          </div>
+
+          <!-- modo: sortear uma lista -->
+          <div data-pane="list">
+            <div class="field">
+              <label for="f-list" data-i18n="form.list">Participants, one per line</label>
+              <textarea id="f-list" data-i18n-ph="form.listPh"></textarea>
+              <div class="field-hint">
+                <span data-i18n="form.listHint"></span>
+                <strong id="f-count" style="color:var(--cyan)"></strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- modo: gerar jogos de loteria -->
+          <div data-pane="lottery" class="hide">
+            <div class="field">
+              <label for="f-lottery" data-i18n="lot.game">Lottery</label>
+              <select id="f-lottery"></select>
+              <span class="field-hint" id="f-lot-rule"></span>
+            </div>
+            <div class="row-2">
+              <div class="field">
+                <label for="f-games" data-i18n="lot.games">How many games?</label>
+                <input type="number" id="f-games" min="1" max="100" value="1">
+              </div>
+              <div class="field">
+                <label for="f-picks" data-i18n="lot.picks">Numbers per game</label>
+                <input type="number" id="f-picks">
+              </div>
+            </div>
+            <div class="field hide" id="f-extra-wrap">
+              <label for="f-extra" data-i18n="lot.extra">Clovers per game</label>
+              <input type="number" id="f-extra" min="2" max="6" value="2">
+            </div>
+            <p class="field-hint" style="margin-bottom:18px" data-i18n="lot.odds"></p>
+          </div>
+
+          <div class="row-2">
+            <div class="field" data-pane="list">
+              <label for="f-winners" data-i18n="form.winners">How many winners?</label>
+              <input type="number" id="f-winners" min="1" value="1">
+            </div>
+            <div class="field" style="display:flex;align-items:flex-end">
+              <label class="check" style="margin-bottom:12px">
+                <input type="checkbox" id="f-public">
+                <span>
+                  <span data-i18n="form.public">Show on the public list</span>
+                  <span class="field-hint" style="margin-top:2px" data-i18n="form.publicHint"></span>
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="f-submit" style="width:100%">
+            <span data-i18n="form.submit">Lock the list and draw</span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section id="how">
+    <div class="wrap">
+      <h2 data-i18n="how.h2">How it works</h2>
+      <p class="sub" data-i18n="how.sub"></p>
+      <div class="steps">
+        <div class="step"><span class="num">01</span><h3 data-i18n="how.s1t"></h3><p data-i18n="how.s1b"></p></div>
+        <div class="step"><span class="num">02</span><h3 data-i18n="how.s2t"></h3><p data-i18n="how.s2b"></p></div>
+        <div class="step"><span class="num">03</span><h3 data-i18n="how.s3t"></h3><p data-i18n="how.s3b"></p></div>
+        <div class="step"><span class="num">04</span><h3 data-i18n="how.s4t"></h3><p data-i18n="how.s4b"></p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="recent">
+    <div class="wrap">
+      <h2 data-i18n="recent.h2">Recent draws</h2>
+      <div class="recent-grid" id="recent-grid"></div>
+    </div>
+  </section>
+
+
+</div>
+
+<!-- ============================================================ SORTEIO -->
+<div id="view-draw" class="hide">
+  <section>
+    <div class="wrap" style="max-width:820px">
+      <div id="draw-body"></div>
+    </div>
+  </section>
+</div>
+
+<!-- ============================================================ VERIFICADOR -->
+<div id="view-verify" class="hide">
+  <section>
+    <div class="wrap" style="max-width:820px">
+      <h2 data-i18n="verify.h2">Verify a draw</h2>
+      <p class="sub" data-i18n="verify.sub"></p>
+
+      <div class="card">
+        <div class="field">
+          <label for="v-input" data-i18n="verify.input">Draw link or code</label>
+          <input type="text" id="v-input" data-i18n-ph="verify.inputPh">
+        </div>
+        <button class="btn btn-primary" id="v-run" style="width:100%">
+          <span data-i18n="verify.run">Run verification</span>
+        </button>
+        <div id="v-steps" style="margin-top:24px"></div>
+        <div id="v-verdict"></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span data-i18n="footer.tag"></span>
+    <span>
+      <a href="mailto:contact@stellardev.dev">contact@stellardev.dev</a>
+      <span class="mono" style="opacity:.6;margin-inline-start:14px">qdraw-v1</span>
+    </span>
+  </div>
+</footer>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="ringgrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#35e6d4"/>
+      <stop offset="55%"  stop-color="#8b6cf6"/>
+      <stop offset="100%" stop-color="#f062a6"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<script>window.__QDRAW_LANG__ = "hi";</script>
+<script type="module" src="/app.js"></script>
+</body>
+</html>

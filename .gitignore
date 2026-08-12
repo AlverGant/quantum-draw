@@ -1,0 +1,15 @@
+node_modules/
+.wrangler/
+.dev.vars
+.env.prod
+*.log
+
+# Pools gerados: contêm os pulsos ainda não revelados. Publicar um destes
+# antes da hora entregaria o resultado de todo sorteio pendente.
+pool*.json
+!pool.example.json
+
+__pycache__/
+*.pyc
+.venv/
+venv/
