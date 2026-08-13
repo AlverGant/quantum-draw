@@ -288,6 +288,11 @@ section > .wrap > p.sub {
   margin-bottom: 8px; color: var(--text);
 }
 .field-hint { display: block; font-size: .8rem; color: var(--text-faint); margin-top: 7px; }
+/* O preço do bilhete: um degrau acima das outras dicas, porque é a linha que
+   evita a surpresa de marcar 20 dezenas. Some por inteiro enquanto o
+   formulário não descreve uma aposta válida — vazio, ainda ocuparia a margem. */
+.cost-hint { color: var(--text-dim); margin-top: 10px; }
+.cost-hint:empty { display: none; }
 
 input[type="text"], input[type="number"], textarea, select {
   width: 100%;
@@ -602,7 +607,7 @@ details.order li { padding: 2px 0; }
 .recent-card .meta { font-size: .78rem; color: var(--text-faint); }
 .recent-card .w { font-size: .85rem; color: var(--cyan); margin-top: 8px; font-family: var(--mono); word-break: break-word; }
 
-/* ------------------------------------------------- tabela de probabilidades */
+/* ------------------------------------- tabela de probabilidades e de preços */
 
 table.odds {
   width: 100%; border-collapse: collapse; margin-top: 14px;
@@ -616,9 +621,28 @@ table.odds th {
 table.odds td { padding: 9px 0; border-bottom: 1px solid var(--line-soft); }
 table.odds tr:last-child td { border-bottom: none; }
 table.odds td:first-child { color: var(--text-dim); }
-table.odds td:last-child {
-  text-align: end; font-family: var(--mono); font-size: .84rem; color: var(--cyan);
+/* As duas colunas numéricas: sem quebra ("1 em 10.000.000" partido no meio não
+   se lê como número) e com respiro à esquerda, senão o preço encosta na
+   chance. O nowrap ainda faz o aperto sobrar para a primeira coluna, que é a
+   única cujo texto quebra bem. */
+table.odds th.num, table.odds td.num {
+  text-align: end; white-space: nowrap; padding-inline-start: 14px;
+}
+/* Marcado por classe, não por :last-child: com a coluna de custo no fim, o
+   destaque em ciano cairia no preço em vez da chance. */
+table.odds td.num {
+  font-family: var(--mono); font-size: .84rem; color: var(--cyan);
   font-variant-numeric: tabular-nums;
+}
+/* O preço acompanha a chance, mas sem competir com ela pelo olho. */
+table.odds td.cost { color: var(--text-dim); font-size: .8rem; }
+
+/* Em tela estreita "1 em 232.560" e "R$ 232.560,00" na mesma linha apertam. */
+@media (max-width: 420px) {
+  table.odds { font-size: .84rem; }
+  table.odds th.num, table.odds td.num { padding-inline-start: 9px; }
+  table.odds td.num { font-size: .76rem; }
+  table.odds td.cost { font-size: .72rem; }
 }
 
 /* Páginas de conteúdo usam h2 alinhado à esquerda dentro de cards. */

@@ -16,7 +16,9 @@ conteúdo aqui não muda (regras e probabilidades são fixas), não há motivo p
 calcular nada em runtime.
 
 As probabilidades são calculadas, não copiadas: `python3 -c` com math.comb
-reproduz cada número desta tabela, e eles batem com os valores oficiais.
+reproduz cada número desta tabela, e eles batem com os valores oficiais. Os
+preços seguem o mesmo caminho — só o valor da aposta mínima vem da Caixa, o
+resto da tabela sai de math.comb e confere com a tabela oficial linha a linha.
 """
 
 from __future__ import annotations
@@ -61,13 +63,35 @@ LANG_META = {
 
 # ------------------------------------------------------------------ loterias
 
-def odds_table(lo: int, hi: int, drawn: int, lo_p: int, hi_p: int, extra: int = 1):
-    """Chance do prêmio máximo para cada quantidade marcada."""
+# Preço da aposta mínima, em centavos, conferido na página oficial de cada
+# modalidade em agosto de 2026. Em centavos porque o Dia de Sorte custa R$ 2,50
+# e a conta do bilhete múltiplo multiplica isso por milhares — em centavos a
+# soma fecha exata e a formatação não depende de arredondamento.
+PRECO = {
+    "megasena": 600, "lotofacil": 350, "quina": 300, "lotomania": 300,
+    "duplasena": 300, "timemania": 350, "diadesorte": 250,
+    "maismilionaria": 600, "supersete": 300,
+}
+
+
+def odds_table(lo: int, hi: int, drawn: int, lo_p: int, hi_p: int,
+               price: int, extra: int = 1):
+    """Chance do prêmio máximo e preço do bilhete, por quantidade marcada.
+
+    O preço segue a regra da Caixa: um bilhete com mais dezenas equivale a
+    C(marcadas, mínimo) apostas simples e custa esse tanto de aposta mínima.
+    Repare que a base da combinação é `lo_p`, o mínimo da modalidade, não
+    `drawn` — na Lotomania marcam-se 50 e sorteiam-se 20, na Timemania marcam-se
+    10 e sorteiam-se 7; nas duas o volante é único e custa uma aposta só.
+
+    `extra` (mês do Dia de Sorte, trevos da +Milionária) divide a chance mas não
+    entra no preço, porque a quantidade mínima de extras já vem no bilhete.
+    """
     total = comb(hi - lo + 1, drawn)
     rows = []
     for picks in range(lo_p, hi_p + 1):
         chance = total * extra // comb(picks, drawn)
-        rows.append((picks, chance))
+        rows.append((picks, chance, comb(picks, lo_p) * price))
     return rows
 
 
@@ -75,56 +99,59 @@ LOTTERIES = [
     {
         "slug": "mega-sena", "id": "megasena", "name": "Mega-Sena",
         "rule": "Marque de 6 a 20 números entre os 60 do volante. São sorteadas 6 dezenas.",
-        "odds": odds_table(1, 60, 6, 6, 20),
+        "odds": odds_table(1, 60, 6, 6, 20, PRECO["megasena"]),
         "min_label": "6 números", "extra": None,
         "note": "É a loteria de maior prêmio do país, e também a de menor chance entre as tradicionais.",
     },
     {
         "slug": "lotofacil", "id": "lotofacil", "name": "Lotofácil",
         "rule": "Marque de 15 a 20 números entre os 25 do volante. São sorteadas 15 dezenas.",
-        "odds": odds_table(1, 25, 15, 15, 20),
+        "odds": odds_table(1, 25, 15, 15, 20, PRECO["lotofacil"]),
         "min_label": "15 números", "extra": None,
         "note": "É a de melhor chance entre todas: acertar 11, 12, 13 ou 14 dezenas também paga.",
     },
     {
         "slug": "quina", "id": "quina", "name": "Quina",
         "rule": "Marque de 5 a 15 números entre os 80 do volante. São sorteadas 5 dezenas.",
-        "odds": odds_table(1, 80, 5, 5, 15),
+        "odds": odds_table(1, 80, 5, 5, 15, PRECO["quina"]),
         "min_label": "5 números", "extra": None,
         "note": "Acertar 2, 3 ou 4 dezenas também paga, o que torna o prêmio secundário frequente.",
     },
     {
         "slug": "lotomania", "id": "lotomania", "name": "Lotomania",
         "rule": "Marque 50 números entre 00 e 99 — metade de todos. São sorteadas 20 dezenas.",
-        "odds": [(50, comb(100, 20) // comb(50, 20))],
+        "odds": odds_table(0, 99, 20, 50, 50, PRECO["lotomania"]),
         "min_label": "50 números", "extra": None,
         "note": "É a única em que não acertar nenhuma dezena também premia.",
     },
     {
         "slug": "dupla-sena", "id": "duplasena", "name": "Dupla Sena",
         "rule": "Marque de 6 a 15 números entre os 50 do volante. Há dois sorteios por concurso.",
-        "odds": odds_table(1, 50, 6, 6, 15),
+        "odds": odds_table(1, 50, 6, 6, 15, PRECO["duplasena"]),
         "min_label": "6 números", "extra": None,
         "note": "Como são dois sorteios no mesmo bilhete, a chance efetiva por concurso é melhor que a da tabela.",
     },
     {
         "slug": "timemania", "id": "timemania", "name": "Timemania",
         "rule": "Marque 10 números entre os 80 do volante e escolha um Time do Coração. São sorteadas 7 dezenas.",
-        "odds": [(10, comb(80, 7) // comb(10, 7))],
+        "odds": odds_table(1, 80, 7, 10, 10, PRECO["timemania"]),
         "min_label": "10 números", "extra": "O Time do Coração é escolha pessoal — o gerador não sorteia por você.",
         "note": "Repare que se aposta 10 dezenas mas só 7 são sorteadas; é a modalidade que mais confunde.",
     },
     {
         "slug": "dia-de-sorte", "id": "diadesorte", "name": "Dia de Sorte",
         "rule": "Marque de 7 a 15 números entre os 31 do volante e um Mês da Sorte. São sorteadas 7 dezenas e um mês.",
-        "odds": [(p, comb(31, 7) * 12 // comb(p, 7)) for p in range(7, 16)],
+        "odds": odds_table(1, 31, 7, 7, 15, PRECO["diadesorte"], extra=12),
         "min_label": "7 números + mês", "extra": "O Mês da Sorte entra no sorteio junto com as dezenas.",
         "note": "Os números vão só até 31 porque representam dias do mês.",
     },
     {
         "slug": "super-sete", "id": "supersete", "name": "Super Sete",
         "rule": "São 7 colunas. Em cada uma, marque de 1 a 3 algarismos de 0 a 9.",
-        "odds": [(1, 10 ** 7), (2, 10 ** 7 // 2 ** 7), (3, 10 ** 7 // 3 ** 7)],
+        # Fora do odds_table: aqui não se escolhe entre 60 dezenas, são 7 globos
+        # independentes. Marcar k algarismos em cada coluna dá k**7 apostas
+        # simples — daí 3 por coluna custar R$ 6.561,00.
+        "odds": [(k, 10 ** 7 // k ** 7, k ** 7 * PRECO["supersete"]) for k in (1, 2, 3)],
         "min_label": "1 algarismo por coluna", "extra": None,
         "note": "Cada coluna é um sorteio independente, com seu próprio globo de 10 bolas.",
         "odds_label": "algarismos por coluna",
@@ -132,7 +159,7 @@ LOTTERIES = [
     {
         "slug": "mais-milionaria", "id": "maismilionaria", "name": "+Milionária",
         "rule": "Marque de 6 a 12 números entre os 50 e de 2 a 6 trevos entre os 6. São sorteadas 6 dezenas e 2 trevos.",
-        "odds": [(p, comb(50, 6) * comb(6, 2) // comb(p, 6)) for p in range(6, 13)],
+        "odds": odds_table(1, 50, 6, 6, 12, PRECO["maismilionaria"], extra=comb(6, 2)),
         "min_label": "6 números + 2 trevos", "extra": "Os trevos são sorteados junto com as dezenas.",
         "note": "É a de menor chance entre todas, e a de maior prêmio mínimo.",
     },
@@ -141,6 +168,11 @@ LOTTERIES = [
 
 def br(n: int) -> str:
     return f"{n:,}".replace(",", ".")
+
+
+def brl(cents: int) -> str:
+    """Centavos para o formato do bilhete: R$ 16.087,50."""
+    return f"R$&nbsp;{br(cents // 100)},{cents % 100:02d}"
 
 
 # ------------------------------------------------------------------ template
@@ -268,14 +300,33 @@ NOT_FOUND = f"""<!doctype html>
 def lottery_page(lot: dict) -> str:
     odds_label = lot.get("odds_label", "números marcados")
     rows = "\n".join(
-        f"        <tr><td>{p}</td><td>1 em {br(c)}</td></tr>" for p, c in lot["odds"]
+        f'        <tr><td>{p}</td><td class="num">1 em {br(c)}</td>'
+        f'<td class="num cost">{brl(v)}</td></tr>' for p, c, v in lot["odds"]
     )
     others = "\n".join(
         f'        <a class="recent-card" href="/pt/{o["slug"]}"><h4>{o["name"]}</h4>'
-        f'<div class="meta">1 em {br(o["odds"][0][1])} · {o["min_label"]}</div></a>'
+        f'<div class="meta">1 em {br(o["odds"][0][1])} · {o["min_label"]} · '
+        f'{brl(o["odds"][0][2])}</div></a>'
         for o in LOTTERIES if o["slug"] != lot["slug"]
     )
-    best = min(lot["odds"], key=lambda r: r[1])
+    minimo, best = lot["odds"][0], min(lot["odds"], key=lambda r: r[1])
+
+    # A tabela antes só apontava "a melhor aposta é 1 em X". Só que a linha de
+    # melhor chance é sempre a mais cara, e pelo mesmo fator — o bilhete grande
+    # é um maço de apostas simples, não um desconto. Elogiar a chance sem o
+    # preço ao lado vendia uma vantagem que não existe.
+    if len(lot["odds"]) > 1:
+        odds_intro = (
+            f'Probabilidade de acertar o prêmio máximo e quanto custa o bilhete, por '
+            f'quantidade marcada. Marcar mais melhora a chance, mas o preço sobe na mesma '
+            f'proporção: <strong style="color:var(--cyan)">1 em {br(best[1])}</strong> sai '
+            f'por {brl(best[2])}, contra {brl(minimo[2])} da aposta mínima. Por real '
+            f'apostado, a chance é a mesma em todas as linhas.')
+    else:
+        odds_intro = (
+            f'Probabilidade de acertar o prêmio máximo e quanto custa o bilhete. A '
+            f'{lot["name"]} tem aposta única de <strong style="color:var(--cyan)">'
+            f'{brl(minimo[2])}</strong> — não há como marcar mais números.')
     title = f"Gerador de jogos da {lot['name']} — números quânticos com prova"
     desc = (f"Gere jogos da {lot['name']} com números vindos de medição quântica em hardware "
             f"da IBM. Prova pública de que os números saíram antes do sorteio. Grátis.")
@@ -375,11 +426,10 @@ def lottery_page(lot: dict) -> str:
 
     <div class="card" style="margin-top:18px">
       <h2 style="font-size:1.3rem;text-align:start">Qual a chance real</h2>
-      <p style="color:var(--text-dim);font-size:.92rem">Probabilidade de acertar o prêmio
-        máximo, por quantidade marcada. A melhor aposta desta tabela ainda é
-        <strong style="color:var(--cyan)">1 em {br(best[1])}</strong>.</p>
+      <p style="color:var(--text-dim);font-size:.92rem">{odds_intro}</p>
       <table class="odds">
-        <thead><tr><th>{odds_label}</th><th>chance</th></tr></thead>
+        <thead><tr><th>{odds_label}</th><th class="num">chance</th>
+          <th class="num">custo</th></tr></thead>
         <tbody>
 {rows}
         </tbody>

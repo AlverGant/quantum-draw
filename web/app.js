@@ -38,6 +38,9 @@ function applyI18n() {
     b.setAttribute('aria-current', String(b.dataset.lang === lang));
   }
   updateCount();
+  // Escritas por JS, sem data-i18n: sem esta chamada continuavam no idioma
+  // anterior depois da troca.
+  refreshRuleHint();
 }
 
 function setLang(next) {
@@ -217,6 +220,19 @@ const LOTTERY_NAMES = {
   diadesorte: 'Dia de Sorte', maismilionaria: '+Milionária', supersete: 'Super Sete',
 };
 
+// Preço da aposta mínima em centavos, o mesmo de scripts/build_pages.py.
+// Mora aqui, e não no catálogo que a API devolve, porque preço não participa da
+// geração: o worker valida quantas dezenas cabem no bilhete, não quanto ele
+// custa. Se a Caixa reajustar, os dois lugares mudam juntos.
+const PRECO = {
+  megasena: 600, lotofacil: 350, quina: 300, lotomania: 300, duplasena: 300,
+  timemania: 350, diadesorte: 250, maismilionaria: 600, supersete: 300,
+};
+
+// Sempre em pt-BR: o bilhete é vendido em real numa lotérica brasileira, então
+// "R$ 6,00" é o formato certo mesmo para quem está lendo o site em francês.
+const BRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+
 let lotteries = null;
 let mode = 'list';
 
@@ -287,6 +303,67 @@ function refreshRuleHint() {
   } else {
     hint.textContent = t('lot.range', { min: spec.min, max: spec.max, lo: spec.lo, hi: spec.hi });
   }
+  refreshCost();
+}
+
+/** C(n, k). Aqui n não passa de 50, então cabe folgado no double. */
+function comb(n, k) {
+  if (k < 0 || k > n) return 0;
+  let r = 1;
+  for (let i = 1; i <= Math.min(k, n - k); i++) r = (r * (n - i + 1)) / i;
+  return Math.round(r);
+}
+
+/**
+ * Quanto o bilhete custa na lotérica, em centavos — `null` se o formulário
+ * ainda não descreve uma aposta válida.
+ *
+ * A regra é a da Caixa: marcar mais dezenas equivale a jogar C(marcadas,
+ * mínimo) apostas simples, e o volante custa esse tanto de aposta mínima. Os
+ * trevos da +Milionária multiplicam junto. O Super Sete foge da combinação
+ * porque cada coluna é um sorteio à parte: 3 algarismos nas 7 colunas dão 3**7
+ * apostas simples, R$ 6.561,00.
+ */
+function betCost(id, spec, picks, extraPicks) {
+  const price = PRECO[id];
+  if (!price || !Number.isInteger(picks) || picks < spec.min || picks > spec.max) return null;
+  if (spec.columns) return price * picks ** spec.columns;
+
+  let combos = comb(picks, spec.min);
+  if (spec.extra === 'trevos') {
+    if (!Number.isInteger(extraPicks)
+        || extraPicks < spec.extra_min || extraPicks > spec.extra_max) return null;
+    combos *= comb(extraPicks, spec.extra_min);
+  }
+  return price * combos;
+}
+
+/**
+ * O preço do que está no formulário agora.
+ *
+ * Vale a pena estar à vista: a Lotofácil sai de R$ 3,50 para R$ 54.264,00 entre
+ * 15 e 20 dezenas, e quem digita "20" sem essa conta na tela não faz ideia. O
+ * site não vende nada — daí o texto dizer que o preço é o da Caixa.
+ */
+function refreshCost() {
+  const el = document.getElementById('f-cost');
+  const sel = document.getElementById('f-lottery');
+  const spec = currentSpec();
+  if (!el || !sel || !spec) return;
+
+  const games = Number(document.getElementById('f-games').value);
+  const cents = betCost(sel.value, spec,
+    Number(document.getElementById('f-picks').value),
+    Number(document.getElementById('f-extra').value));
+
+  if (cents === null || !Number.isInteger(games) || games < 1) {
+    el.textContent = '';
+    return;
+  }
+  el.textContent = games > 1
+    ? t('lot.costN', { v: BRL.format(cents / 100), n: fmtNum(games),
+                       total: BRL.format((cents * games) / 100) })
+    : t('lot.cost', { v: BRL.format(cents / 100) });
 }
 
 /**
@@ -413,6 +490,11 @@ function initForm() {
   picksInput?.addEventListener('input', refreshRuleHint);
   picksInput?.addEventListener('change', clampPicks);
   picksInput?.addEventListener('blur', clampPicks);
+  // O preço muda com a quantidade de jogos e com os trevos, não só com as
+  // dezenas — os três campos precisam recalcular a linha.
+  for (const id of ['f-games', 'f-extra']) {
+    document.getElementById(id)?.addEventListener('input', refreshRuleHint);
+  }
   for (const b of document.querySelectorAll('.modes .mode')) {
     b.addEventListener('click', () => setMode(b.dataset.mode));
   }
