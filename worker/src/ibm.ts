@@ -9,8 +9,12 @@
  *     H  ->  rz(pi/2) . sx . rz(pi/2)
  *
  * (as portas nativas do Heron são cz, id, rz, sx, x — H não é uma delas).
- * Qualquer circuito com emaranhamento exigiria transpilação de verdade e este
- * atalho não valeria; para gerar entropia, ele vale.
+ *
+ * O teste de Bell anexado ao mesmo job (ver chsh.ts) é a única exceção: ele
+ * emaranha, e por isso precisa de um par de qubits que já seja vizinho no mapa
+ * de acoplamento. Continua sem exigir roteamento — `bestPair` escolhe uma
+ * aresta que existe no hardware, e um circuito de dois qubits adjacentes não
+ * tem o que rotear. É o máximo que dá para fazer sem transpilador de verdade.
  */
 
 const IAM_URL = 'https://iam.cloud.ibm.com/identity/token';
@@ -78,12 +82,75 @@ export class IbmClient {
     return this.call(`/backends/${encodeURIComponent(name)}/status`);
   }
 
-  async configuration(name: string): Promise<{ n_qubits: number; max_shots: number }> {
-    const c = await this.call<{ n_qubits?: number; max_shots?: number }>(
-      `/backends/${encodeURIComponent(name)}/configuration`,
-    );
+  async configuration(name: string): Promise<BackendConfig> {
+    const c = await this.call<{
+      n_qubits?: number;
+      max_shots?: number;
+      basis_gates?: string[];
+      coupling_map?: number[][];
+    }>(`/backends/${encodeURIComponent(name)}/configuration`);
     if (!c.n_qubits) throw new Error(`configuração de ${name} sem n_qubits`);
-    return { n_qubits: c.n_qubits, max_shots: c.max_shots ?? 100_000 };
+    return {
+      n_qubits: c.n_qubits,
+      max_shots: c.max_shots ?? 100_000,
+      basis_gates: c.basis_gates ?? [],
+      coupling_map: c.coupling_map ?? [],
+    };
+  }
+
+  /**
+   * Par de qubits vizinhos para o teste de Bell, preferindo o de menor erro.
+   *
+   * A qualidade do par manda direto no valor de S: num par ruim o
+   * emaranhamento decoere e S despenca em direção a 2, que é justamente o
+   * número que não queremos ver por motivo errado. O critério soma o erro da
+   * cz com os erros de leitura dos dois qubits — leitura pesa tanto quanto a
+   * porta, porque cada shot passa por ela duas vezes.
+   *
+   * Devolve null quando o backend não expõe mapa de acoplamento; nesse caso o
+   * harvest segue só com a entropia. As propriedades são um JSON grande e a
+   * chamada é opcional: se falhar, cai na primeira aresta do mapa em vez de
+   * derrubar o teste inteiro.
+   */
+  async bestPair(name: string, couplingMap: number[][]): Promise<[number, number] | null> {
+    const edges = couplingMap.filter(
+      (e) => Array.isArray(e) && e.length === 2 && e[0] !== e[1],
+    );
+    if (edges.length === 0) return null;
+
+    try {
+      const props = await this.call<BackendProps>(
+        `/backends/${encodeURIComponent(name)}/properties`,
+      );
+      const readout = new Map<number, number>();
+      (props.qubits ?? []).forEach((params, q) => {
+        const p = params.find((x) => x.name === 'readout_error');
+        if (typeof p?.value === 'number') readout.set(q, p.value);
+      });
+
+      // O par sai das propriedades, mas quem manda no que o hardware aceita é
+      // o mapa de acoplamento: um par fora dele viraria circuito não-ISA e o
+      // job inteiro seria recusado, entropia junto.
+      const adjacent = new Set(edges.map(([a, b]) => `${a},${b}`));
+
+      let best: { pair: [number, number]; score: number } | null = null;
+      for (const gate of props.gates ?? []) {
+        if (gate.gate !== 'cz' || gate.qubits?.length !== 2) continue;
+        const err = gate.parameters?.find((p) => p.name === 'gate_error')?.value;
+        if (typeof err !== 'number') continue;
+        const [qa, qb] = gate.qubits;
+        if (!adjacent.has(`${qa},${qb}`) && !adjacent.has(`${qb},${qa}`)) continue;
+        // Sem leitura conhecida assumimos 5%, pior que qualquer qubit decente:
+        // um par sem dado nunca ganha de um par medido e bom.
+        const score = err + (readout.get(qa) ?? 0.05) + (readout.get(qb) ?? 0.05);
+        if (!best || score < best.score) best = { pair: [qa, qb], score };
+      }
+      if (best) return best.pair;
+    } catch (e) {
+      console.error('CHSH: propriedades indisponíveis, usando a primeira aresta', e);
+    }
+
+    return [edges[0][0], edges[0][1]];
   }
 
   /** Backend operacional com a menor fila. */
@@ -105,13 +172,26 @@ export class IbmClient {
     return best.name;
   }
 
-  async submitSampler(backend: string, qasm: string, shots: number): Promise<string> {
+  /**
+   * Submete um job com um ou mais circuitos.
+   *
+   * Vários PUBs num job só, e não vários jobs, porque **o custo por job tem um
+   * componente fixo grande**: um job de 2.000 shots já custou 3 s de QPU
+   * cobrada para 0,54 s de execução. Separar o teste de Bell num job próprio
+   * custaria mais no overhead do que nos shots dele.
+   */
+  async submitSampler(backend: string, pubs: PubSpec[]): Promise<string> {
+    if (pubs.length === 0) throw new Error('submissão sem nenhum circuito');
     const job = await this.call<{ id?: string }>('/jobs', {
       method: 'POST',
       body: JSON.stringify({
         program_id: 'sampler',
         backend,
-        params: { pubs: [[qasm, null, shots]], version: 2, support_qiskit: false },
+        params: {
+          pubs: pubs.map((p) => [p.qasm, null, p.shots]),
+          version: 2,
+          support_qiskit: false,
+        },
       }),
     });
     if (!job.id) throw new Error('submissão não devolveu id de job');
@@ -126,18 +206,45 @@ export class IbmClient {
     return { status: j.state?.status ?? 'Unknown', charged: j.bss?.seconds ?? null };
   }
 
-  async results(id: string): Promise<string[]> {
+  /** Amostras hex de cada PUB, na mesma ordem em que foram submetidos. */
+  async results(id: string): Promise<string[][]> {
     const r = await this.call<{
       results?: Array<{ data?: Record<string, { samples?: string[] }> }>;
     }>(`/jobs/${encodeURIComponent(id)}/results`);
-    const data = r.results?.[0]?.data;
-    if (!data) throw new Error('resultado sem campo data');
-    // O registrador clássico se chama "meas" (é como nomeamos no QASM), mas
-    // aceitamos qualquer nome para não quebrar se a API mudar o rótulo.
-    const reg = data.meas ?? Object.values(data)[0];
-    if (!reg?.samples) throw new Error('resultado sem amostras');
-    return reg.samples;
+    const entries = r.results;
+    if (!entries?.length) throw new Error('resultado sem campo results');
+    return entries.map((entry, i) => {
+      const data = entry.data;
+      if (!data) throw new Error(`resultado ${i} sem campo data`);
+      // Os registradores se chamam "meas" (entropia) e "chsh" (Bell), que é
+      // como os nomeamos no QASM, mas aceitamos qualquer nome para não quebrar
+      // se a API mudar o rótulo.
+      const reg = data.meas ?? data.chsh ?? Object.values(data)[0];
+      if (!reg?.samples) throw new Error(`resultado ${i} sem amostras`);
+      return reg.samples;
+    });
   }
+}
+
+export interface PubSpec {
+  qasm: string;
+  shots: number;
+}
+
+export interface BackendConfig {
+  n_qubits: number;
+  max_shots: number;
+  basis_gates: string[];
+  coupling_map: number[][];
+}
+
+interface BackendProps {
+  qubits?: Array<Array<{ name?: string; value?: number }>>;
+  gates?: Array<{
+    gate?: string;
+    qubits?: number[];
+    parameters?: Array<{ name?: string; value?: number }>;
+  }>;
 }
 
 /** Circuito H^n + measure em OpenQASM 3, com qubits físicos. */

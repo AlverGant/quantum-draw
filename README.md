@@ -75,14 +75,45 @@ As regras de cada modalidade foram conferidas contra a API pública da Caixa
 quanto o apostador marca, não quanto a Caixa sorteia — na Timemania aposta-se
 10 dezenas e são sorteadas 7.
 
-### O que isto não é
+### A testemunha de Bell
 
-Não é aleatoriedade quântica *certificada*. Certificação de verdade exige um
-teste de Bell violando a desigualdade CHSH, o que prova que os bits não foram
-pré-programados no dispositivo. Aqui, confia-se que a IBM opera a QPU honestamente.
-O que **não** exige confiança é o sorteio em si: dado o pulso publicado, o
-resultado é verificável por qualquer um. A garantia de imparcialidade vem do
-commit-reveal com o drand, não da física.
+Todo pool vem com um teste CHSH rodado no mesmo job que colheu a entropia. Ele
+existe porque a entropia sozinha não diz nada sobre a origem dos bits: uma QPU
+que na verdade devolvesse a saída de um PRNG entregaria amostras igualmente bem
+distribuídas, e nenhum teste estatístico sobre o pool separaria os dois casos.
+
+O teste prepara o estado de Bell |Φ+> num par de qubits vizinhos, mede os dois
+lados em quatro combinações de base e calcula
+
+```
+S = E(a,b) + E(a,b') + E(a',b) − E(a',b')      a=0, a'=π/2, b=π/4, b'=−π/4
+```
+
+com `E(α,β) = cos(α−β)` no caso ideal. **S ≤ 2 para qualquer processo em que os
+bits já estivessem tabelados antes da medição**; a mecânica quântica chega a
+2√2 ≈ 2,828, e hardware real costuma ficar em 2,4–2,7. O laudo — S, a incerteza,
+a distância em sigmas do teto clássico, as quatro correlações e o par de qubits
+usado — sai em `source.chsh`, tanto em `GET /api/pool` quanto no pacote de prova
+de cada sorteio.
+
+**O que continua não sendo.** Isto é uma *testemunha de emaranhamento*, não
+aleatoriedade certificada. Os dois qubits ficam a micrômetros um do outro no
+mesmo chip, são lidos pela mesma eletrônica e as bases são escolhidas por nós na
+submissão: as brechas de localidade e de livre-arbítrio continuam abertas, e
+quem opera o hardware continua sendo a IBM. Certificação de verdade exigiria
+separação tipo-espaço ou o protocolo de amostragem de circuitos aleatórios com
+verificação por XEB — este último precisa de um supercomputador clássico para
+conferir. O que a testemunha fecha é a hipótese mais barata contra o projeto: a
+de que o "hardware quântico" é um gerador clássico com outro nome.
+
+E nada disso é o que garante a imparcialidade do sorteio. Essa vem do
+commit-reveal com o drand: dado o pulso publicado, o resultado é verificável por
+qualquer um, com ou sem física.
+
+**Um S baixo não bloqueia o pool.** Se o teste não violar, o pool é publicado
+assim mesmo com o número exposto — sem pool o site inteiro devolve 503, e a
+testemunha é evidência anexada à entropia, não um portão na frente dela. Quem lê
+a prova vê o S e julga sozinho. O caso aparece como erro no `wrangler tail`.
 
 ## Verificação
 
@@ -122,8 +153,17 @@ H  ->  rz(pi/2) · sx · rz(pi/2)
 ```
 
 O Worker gera o OpenQASM 3 direto, submete em `POST /api/v1/jobs` e lê as
-amostras em hex. Qualquer circuito com emaranhamento exigiria transpilação de
-verdade e o atalho não valeria; para gerar entropia, vale.
+amostras em hex.
+
+O teste de Bell é a única exceção — ele emaranha — e mesmo assim escapa do
+transpilador: `cz` é nativa e o par de qubits é escolhido **entre os que já são
+vizinhos no mapa de acoplamento**, preferindo o de menor erro de porta e de
+leitura. Dois qubits adjacentes não têm o que rotear. Os quatro circuitos viajam
+como PUBs extras no **mesmo job** da entropia, nunca num job próprio: com um
+custo fixo de 3 s por job, separá-los sairia mais caro no overhead do que nos
+shots. Num backend sem `cz` nativa (a família Eagle usa `ecr`) o teste é pulado
+e o harvest segue só com a entropia — decompor `ecr` na mão sem transpilador
+para conferir seria pedir para errar em silêncio.
 
 Secrets necessários no Worker: `IBM_API_KEY` (chave do IBM Cloud) e `IBM_CRN`
 (CRN da instância). Sem eles o harvest automático fica desligado e o pool passa
@@ -175,6 +215,14 @@ Um harvest diário gasta ~240 s/mês, 40% do teto, deixando folga para retentati
 Se precisar economizar, dobrar o período para 120 s corta os shots pela metade —
 o custo é o sorteio demorar entre 2 e 4 minutos em vez de 2 a 3.
 
+O teste de Bell acrescenta 4 × 2 048 = 8 192 shots a esse mesmo job, ~38% a mais
+de shots. Como não abre job novo, não paga o custo fixo de novo: a estimativa é
+ir de 8 s para 10–11 s por harvest, algo como 310 s/mês. **É estimativa, não
+medição** — o valor real de cada colheita fica em `charged_seconds`, no
+`/api/admin/harvest` e no `source` do pool. Se apertar, `CHSH_SHOTS` regula: com
+1 024 a incerteza de S ainda fica em ~0,06, o suficiente para uma violação típica
+aparecer a 8σ do teto clássico; `CHSH_SHOTS=0` desliga o teste.
+
 O harvest no Worker consome ~64 ms de CPU (von Neumann sobre 3,4 M bits, 2 880
 hashes de condicionamento e 1 440 folhas de Merkle). Isso **exige o plano
 Workers Paid** — o Free limita a 10 ms por invocação, inclusive em cron.
@@ -195,6 +243,16 @@ npm run db:remote
 npx wrangler secret put ADMIN_TOKEN
 npx wrangler secret put VISITOR_SALT
 npm run deploy                        # roda build + testes antes de publicar
+```
+
+Num banco que já existe, `npm run db:remote` **não** altera tabelas — o schema é
+todo `CREATE TABLE IF NOT EXISTS`. Colunas novas entram pelos arquivos em
+`migrations/`, e a do teste de Bell precisa ir antes do deploy: sem ela o
+`UPDATE harvest_state` falha, nenhum pool novo é publicado e o site cai em 503
+quando o pool atual esgotar.
+
+```bash
+npx wrangler d1 execute qdraw --remote --file=./migrations/0003_chsh.sql
 ```
 
 ## Testes

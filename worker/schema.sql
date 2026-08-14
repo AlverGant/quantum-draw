@@ -84,7 +84,11 @@ CREATE TABLE IF NOT EXISTS harvest_state (
   -- faria o tick seguinte submeter outro job, a cada 5 minutos, queimando os
   -- 10 minutos mensais numa tarde.
   failures        INTEGER NOT NULL DEFAULT 0,
-  retry_after     INTEGER
+  retry_after     INTEGER,
+  -- Par de qubits e shots do teste de Bell submetido junto com a entropia. O
+  -- job é submetido num tick e lido em outro, então sem isto a volta não sabe
+  -- quantos PUBs pular nem que par de qubits gerou aqueles resultados.
+  chsh_json       TEXT
 );
 
 INSERT OR IGNORE INTO harvest_state (id, status) VALUES (1, 'idle');

@@ -36,8 +36,9 @@ import {
   type ProofStep,
 } from './protocol.ts';
 import { QUICKNET, fetchRound, roundAt, timeOfRound } from './drand.ts';
-import { IbmClient, buildQasm3, samplesToBits } from './ibm.ts';
+import { IbmClient, buildQasm3, samplesToBits, type PubSpec } from './ibm.ts';
 import { buildPool, rawBitsNeeded, type BuiltPool } from './harvest.ts';
+import { CHSH_SETTINGS, chshPubs, chshScore } from './chsh.ts';
 import {
   LOTTERIES,
   generate as generateLottery,
@@ -59,6 +60,8 @@ export interface Env {
   HARVEST_PULSES?: string;
   HARVEST_PERIOD?: string;
   HARVEST_MARGIN_SECONDS?: string;
+  // Shots por par de bases do teste de Bell. "0" desliga o teste.
+  CHSH_SHOTS?: string;
 }
 
 // ------------------------------------------------------------------ util
@@ -333,9 +336,26 @@ interface HarvestRow {
   charged_seconds: number | null;
   failures: number;
   retry_after: number | null;
+  chsh_json: string | null;
+}
+
+/** O que foi submetido de CHSH neste job, para saber ler os PUBs na volta. */
+interface ChshPlan {
+  pair: [number, number];
+  shots: number;
+  /** Rótulos na ordem dos PUBs; o comprimento diz quantos PUBs pular. */
+  labels: string[];
 }
 
 const HARVEST_DEFAULTS = { pulses: 1440, period: 60, margin: 6 * 3600 };
+/**
+ * Shots por par de bases do teste de Bell — quatro pares, então 4x isto de
+ * shots a mais no job. Com 2.048, σ_S ≈ 0,044: uma violação de hardware típica
+ * (S ≈ 2,5) fica a mais de 10σ do teto clássico, o que já é conclusivo. Subir
+ * não compra quase nada de certeza e sai direto do orçamento de QPU, que é o
+ * recurso escasso aqui.
+ */
+const CHSH_SHOTS_DEFAULT = 2048;
 // Um job que não termina em 2h está travado na fila; melhor desistir e tentar
 // outro backend do que ficar preso para sempre esperando.
 const HARVEST_JOB_TIMEOUT = 2 * 3600;
@@ -394,8 +414,9 @@ async function harvestTick(env: Env, force = false): Promise<void> {
 
     if (info.status === 'Completed') {
       try {
-        const samples = await client.results(st.job_id);
-        const { raw, nBits } = samplesToBits(samples, st.qubits ?? 0);
+        const pubs = await client.results(st.job_id);
+        const { raw, nBits } = samplesToBits(pubs[0], st.qubits ?? 0);
+        const chsh = readChsh(st, pubs);
         const pool = await buildPool(raw, nBits, st.pulses ?? HARVEST_DEFAULTS.pulses,
           st.period ?? HARVEST_DEFAULTS.period, {
             provider: 'ibm_quantum',
@@ -407,8 +428,17 @@ async function harvestTick(env: Env, force = false): Promise<void> {
             charged_seconds: info.charged,
             captured_at: ts,
             harvested_by: 'cloudflare-cron',
+            chsh,
           });
         await persistPool(env, pool);
+        if (chsh && !chsh.violates) {
+          // Não bloqueia o pool: sem pool o site inteiro cai em 503, e o teste
+          // é evidência publicada junto da entropia, não um portão na frente
+          // dela. Quem lê a prova vê o S e julga sozinho.
+          console.error(
+            `harvest: CHSH sem violação (S=${chsh.s} ± ${chsh.sigma}) — pool publicado assim mesmo`,
+          );
+        }
         await env.DB.prepare(
           `UPDATE harvest_state SET status='idle', job_id=NULL, last_error=NULL,
              last_success=?, charged_seconds=?, last_check=?, failures=0, retry_after=NULL
@@ -416,7 +446,10 @@ async function harvestTick(env: Env, force = false): Promise<void> {
         )
           .bind(ts, info.charged, ts)
           .run();
-        console.log(`harvest: pool ${pool.poolId} publicado (${pool.pulses.length} pulsos, ${info.charged}s de QPU)`);
+        console.log(
+          `harvest: pool ${pool.poolId} publicado (${pool.pulses.length} pulsos, ` +
+            `${info.charged}s de QPU${chsh ? `, CHSH S=${chsh.s}` : ''})`,
+        );
       } catch (e) {
         // O QPU já foi gasto neste job. Voltar para idle faria o próximo tick
         // submeter outro; o backoff garante que uma falha de montagem não vire
@@ -465,16 +498,75 @@ async function harvestTick(env: Env, force = false): Promise<void> {
       throw new Error(`preciso de ${shots} shots, backend aceita ${config.max_shots}`);
     }
 
-    const jobId = await client.submitSampler(backend, buildQasm3(qubits), shots);
+    const pubs: PubSpec[] = [{ qasm: buildQasm3(qubits), shots }];
+    // Um CHSH_SHOTS acima do teto do backend faria a IBM recusar o job inteiro,
+    // entropia junto — o teste nunca pode custar isso.
+    const chshShots = Math.min(Number(env.CHSH_SHOTS ?? CHSH_SHOTS_DEFAULT), config.max_shots);
+    const plan = await planChsh(client, backend, config, chshShots);
+    if (plan) pubs.push(...chshPubs(plan.pair, plan.shots));
+
+    const jobId = await client.submitSampler(backend, pubs);
     await env.DB.prepare(
       `UPDATE harvest_state SET status='submitted', job_id=?, backend=?, shots=?, qubits=?,
-         pulses=?, period=?, submitted_at=?, last_check=?, last_error=NULL WHERE id=1`,
+         pulses=?, period=?, submitted_at=?, last_check=?, last_error=NULL, chsh_json=? WHERE id=1`,
     )
-      .bind(jobId, backend, shots, qubits, pulses, period, ts, ts)
+      .bind(jobId, backend, shots, qubits, pulses, period, ts, ts, plan ? JSON.stringify(plan) : null)
       .run();
-    console.log(`harvest: job ${jobId} submetido em ${backend} (${shots} shots x ${qubits} qubits)`);
+    console.log(
+      `harvest: job ${jobId} submetido em ${backend} (${shots} shots x ${qubits} qubits` +
+        `${plan ? `, + CHSH em [${plan.pair}] com ${plan.shots} shots x 4 bases` : ', sem CHSH'})`,
+    );
   } catch (e) {
     await harvestError(env, `submissão: ${(e as Error).message}`, failures);
+  }
+}
+
+/**
+ * Escolhe o par de qubits do teste de Bell, ou null para submeter só a entropia.
+ *
+ * Toda falha aqui é engolida de propósito: o teste é um acréscimo à prova, e
+ * derrubar a colheita de entropia por causa dele inverteria as prioridades —
+ * ficaríamos sem pool, e o site sem pool devolve 503.
+ */
+async function planChsh(
+  client: IbmClient,
+  backend: string,
+  config: { basis_gates: string[]; coupling_map: number[][] },
+  shots: number,
+): Promise<ChshPlan | null> {
+  if (!Number.isFinite(shots) || shots <= 0) return null;
+  try {
+    // O circuito emaranha com cz. Num backend cujo par nativo seja outro (a
+    // família Eagle usa ecr), o QASM não seria ISA e a IBM recusaria o job
+    // inteiro — junto com a entropia. Melhor sair fora do que arriscar isso.
+    if (!config.basis_gates.includes('cz')) {
+      console.error(`CHSH: ${backend} não tem cz nativa (${config.basis_gates.join(',')}), pulando`);
+      return null;
+    }
+    const pair = await client.bestPair(backend, config.coupling_map);
+    if (!pair) {
+      console.error(`CHSH: ${backend} não expôs mapa de acoplamento, pulando`);
+      return null;
+    }
+    return { pair, shots, labels: CHSH_SETTINGS.map((s) => s.label) };
+  } catch (e) {
+    console.error('CHSH: planejamento falhou, seguindo só com a entropia', e);
+    return null;
+  }
+}
+
+/** Laudo do teste de Bell a partir dos PUBs que vieram depois o da entropia. */
+function readChsh(st: HarvestRow, pubs: string[][]): ReturnType<typeof chshScore> | null {
+  if (!st.chsh_json) return null;
+  try {
+    const plan = JSON.parse(st.chsh_json) as ChshPlan;
+    const samples = pubs.slice(1, 1 + plan.labels.length);
+    return chshScore(plan.pair, samples);
+  } catch (e) {
+    // Idem: o pool já custou o QPU deste job e não depende do teste. Perder o
+    // laudo é um pool sem CHSH; deixar a exceção subir seria um pool a menos.
+    console.error('CHSH: laudo não pôde ser calculado', e);
+    return null;
   }
 }
 
