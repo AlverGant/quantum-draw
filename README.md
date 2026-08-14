@@ -206,6 +206,7 @@ O plano Open dá **10 minutos de QPU por mês** (600 s). Medições reais no
 |---|---|---|---|
 | Calibração | 2 000 | 0,54 s | 3 s |
 | Harvest de 24 h | 21 741 | 5,86 s | 8 s |
+| Harvest de 24 h + CHSH | 21 741 + 4×2 048 | 8,87 s | **10 s** |
 
 Repare no custo fixo: 3 segundos cobrados por um job de meio segundo. **Poucos
 jobs grandes custam muito menos que muitos pequenos** — por isso o harvester
@@ -216,12 +217,21 @@ Se precisar economizar, dobrar o período para 120 s corta os shots pela metade 
 o custo é o sorteio demorar entre 2 e 4 minutos em vez de 2 a 3.
 
 O teste de Bell acrescenta 4 × 2 048 = 8 192 shots a esse mesmo job, ~38% a mais
-de shots. Como não abre job novo, não paga o custo fixo de novo: a estimativa é
-ir de 8 s para 10–11 s por harvest, algo como 310 s/mês. **É estimativa, não
-medição** — o valor real de cada colheita fica em `charged_seconds`, no
-`/api/admin/harvest` e no `source` do pool. Se apertar, `CHSH_SHOTS` regula: com
-1 024 a incerteza de S ainda fica em ~0,06, o suficiente para uma violação típica
-aparecer a 8σ do teto clássico; `CHSH_SHOTS=0` desliga o teste.
+de shots, e **medido no `ibm_marrakesh` custou 2 s: de 8 s para 10 s**. Como não
+abre job novo, não paga o custo fixo de novo — 8 mil shots de dois qubits saem
+por um quarto do que sairiam sozinhos. Um harvest diário passa a ~300 s/mês,
+metade do teto. Se apertar, `CHSH_SHOTS` regula: com 1 024 a incerteza de S ainda
+fica em ~0,06, o suficiente para uma violação típica aparecer a 8σ do teto
+clássico; `CHSH_SHOTS=0` desliga o teste.
+
+Primeira execução, em 2026-08-14: **S = 2,781 ± 0,032**, 24,6σ acima do limite
+clássico e 98,3% do máximo de Tsirelson, no par de qubits 54–55. As quatro
+correlações saíram dentro de 0,03 do valor ideal.
+
+Um detalhe da API: **`bss.seconds` volta nulo em job recém-concluído** e só é
+preenchido minutos depois. Como o Worker lê o job no instante em que ele
+completa, o `charged_seconds` gravado no pool costuma ser `null`; o valor real
+sai em `GET /api/v1/jobs` na conta da IBM.
 
 O harvest no Worker consome ~64 ms de CPU (von Neumann sobre 3,4 M bits, 2 880
 hashes de condicionamento e 1 440 folhas de Merkle). Isso **exige o plano

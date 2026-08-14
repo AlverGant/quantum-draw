@@ -691,6 +691,71 @@ footer a { color: var(--text-dim); }
 .badge.q { border-color: rgba(53, 230, 212, .35); color: var(--cyan); background: rgba(53, 230, 212, .06); }
 .badge.warn { border-color: rgba(255, 180, 84, .4); color: var(--amber); background: rgba(255, 180, 84, .07); }
 
+/* ---------------------------------------------------------- teste de Bell */
+
+.bell-card { max-width: 720px; margin: 0 auto; }
+
+.bell-top { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+.bell-k { display: block; font-size: .78rem; color: var(--text-faint); margin-bottom: 2px; }
+.bell-s {
+  font-family: var(--mono); font-size: 2.6rem; font-weight: 700; line-height: 1;
+  background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.bell-verdict { align-self: center; }
+
+/* A régua fica sempre da esquerda para a direita, inclusive em árabe: espelhar
+   uma reta numérica trocaria o 0 de lado e inverteria a leitura do gráfico. */
+.bell-gauge { margin: 22px 0 30px; }
+.bell-track {
+  position: relative; height: 10px; border-radius: 999px;
+  background: var(--line-soft); border: 1px solid var(--line);
+}
+.bell-fill {
+  position: absolute; inset: 0 auto 0 0; border-radius: 999px;
+  background: var(--grad); opacity: .55;
+}
+.bell-bound {
+  position: absolute; top: -6px; bottom: -6px; width: 2px;
+  background: var(--amber); border-radius: 2px;
+}
+.bell-dot {
+  position: absolute; top: 50%; width: 15px; height: 15px; margin-left: -7.5px;
+  transform: translateY(-50%); border-radius: 50%;
+  background: var(--cyan); box-shadow: 0 0 0 4px rgba(53, 230, 212, .18);
+}
+.bell-legend {
+  margin-top: 11px;
+  font-family: var(--mono); font-size: .72rem; color: var(--text-faint);
+  display: flex; justify-content: space-between;
+}
+/* O rótulo do limite clássico fica ACIMA da barra, alinhado ao seu traço. Na
+   mesma linha dos extremos ele encavalava o rótulo de Tsirelson: 2 e 2√2 estão
+   a 29% de distância um do outro, e os dois textos são mais largos que isso. */
+.bell-marks {
+  position: relative; height: 1.1rem; margin-bottom: 9px;
+  font-family: var(--mono); font-size: .72rem;
+}
+.bell-lg-mid {
+  position: absolute; top: 0; transform: translateX(-50%);
+  color: var(--amber); white-space: nowrap;
+}
+
+.bell-setup { font-size: .84rem; color: var(--text-dim); margin: 0 0 14px; }
+.bell-row .lbl { font-family: var(--mono); color: var(--text-dim); }
+.bell-ideal { font-family: var(--mono); font-size: .74rem; color: var(--text-faint); white-space: nowrap; }
+.bell-caveat {
+  margin: 18px 0 0; padding-top: 16px; border-top: 1px solid var(--line-soft);
+  font-size: .82rem; color: var(--text-faint); line-height: 1.65;
+}
+
+@media (max-width: 620px) {
+  .bell-s { font-size: 2.1rem; }
+  /* Em tela estreita o rótulo centrado a 70,7% transborda o cartão pela
+     direita; encostá-lo no fim da região clássica resolve sem mentir sobre
+     onde fica o limite — o traço âmbar continua marcando o ponto exato. */
+  .bell-lg-mid { transform: translateX(-100%); padding-right: 4px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }

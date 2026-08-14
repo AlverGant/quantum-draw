@@ -84,6 +84,11 @@ function buildLangMenu() {
 // ---------------------------------------------------------------- helpers
 
 const fmtNum = (n) => new Intl.NumberFormat(LOCALES[lang].intl).format(n ?? 0);
+// Casas fixas: S = 2,780 e S = 2,78 lado a lado desalinhariam a coluna, e a
+// terceira casa é onde a incerteza do teste mora.
+const fmtDec = (n, d) => new Intl.NumberFormat(LOCALES[lang].intl, {
+  minimumFractionDigits: d, maximumFractionDigits: d,
+}).format(n ?? 0);
 
 const fmtDate = (ts) =>
   new Intl.DateTimeFormat(LOCALES[lang].intl, { dateStyle: 'medium', timeStyle: 'short' })
@@ -162,23 +167,103 @@ async function loadStats() {
   }
 }
 
-async function loadPoolNote() {
+async function loadPool() {
   const box = document.getElementById('pool-note');
-  if (!box) return;
+  const bell = document.getElementById('bell-body');
+  let pool;
   try {
-    const pool = await api('/api/pool');
-    const src = pool.source ?? {};
+    pool = await api('/api/pool');
+  } catch {
+    if (box) box.innerHTML = '';
+    if (bell) bell.closest('section')?.classList.add('hide');
+    return;
+  }
+
+  const src = pool.source ?? {};
+  if (box) {
     if (src.quantum === false || src.provider === 'local_csprng') {
       box.innerHTML = `<div class="alert alert-error"><span class="badge warn">⚠</span> ${esc(t('common.devPool'))}</div>`;
     } else {
       const who = src.provider === 'ibm_quantum'
         ? `IBM Quantum · ${esc(src.backend ?? '?')}`
         : src.provider === 'anu_qrng' ? 'ANU QRNG' : esc(src.provider ?? '?');
-      box.innerHTML = `<div class="alert alert-info"><span class="badge q">●</span> ${who} · ${esc(t('proof.root'))} <code style="font-size:.74rem">${esc(pool.merkle_root.slice(0, 24))}…</code></div>`;
+      // S entra aqui em vez de só no painel: é a informação nova, e quem cria
+      // um sorteio olha esta linha e não rola até o fim da página.
+      const s = src.chsh?.violates ? ` · Bell S = ${fmtDec(src.chsh.s, 3)}` : '';
+      box.innerHTML = `<div class="alert alert-info"><span class="badge q">●</span> ${who}${s} · ${esc(t('proof.root'))} <code style="font-size:.74rem">${esc(pool.merkle_root.slice(0, 24))}…</code></div>`;
     }
-  } catch {
-    box.innerHTML = '';
   }
+  paintBell(bell, src);
+}
+
+/**
+ * Painel do teste de Bell.
+ *
+ * A escala vai de 0 a 2√2 porque é o intervalo que a mecânica quântica
+ * permite, e o corte em 2 é o ponto inteiro do gráfico: à esquerda dele estão
+ * os valores que um gerador clássico também produziria, à direita não. Sem essa
+ * marca, "S = 2,78" é um número sem régua.
+ */
+function paintBell(box, src) {
+  if (!box) return;
+  const section = box.closest('section');
+  const c = src.chsh;
+  if (!c || !Array.isArray(c.settings)) {
+    // Pool antigo ou colhido sem o teste: esconder é mais honesto que mostrar
+    // um painel vazio sugerindo que o teste falhou.
+    section?.classList.add('hide');
+    return;
+  }
+  section?.classList.remove('hide');
+
+  const max = c.tsirelson_bound || 2 * Math.SQRT2;
+  const pct = (v) => `${Math.max(0, Math.min(100, (v / max) * 100)).toFixed(2)}%`;
+  const rows = c.settings.map((s) => `
+    <div class="hash-row bell-row">
+      <span class="lbl">${esc(s.label.replaceAll("'", '′'))}</span>
+      <code>${s.e >= 0 ? '+' : '−'}${fmtDec(Math.abs(s.e), 3)}</code>
+      <span class="bell-ideal">${esc(t('bell.ideal'))} ${s.ideal >= 0 ? '+' : '−'}${fmtDec(Math.abs(s.ideal), 3)}</span>
+    </div>`).join('');
+
+  box.innerHTML = `
+    <div class="card bell-card">
+      <div class="bell-top">
+        <div>
+          <span class="bell-k">${esc(t('bell.s'))}</span>
+          <span class="bell-s">${fmtDec(c.s, 3)}</span>
+        </div>
+        <span class="badge ${c.violates ? 'q' : 'warn'} bell-verdict">
+          ${c.violates
+            ? esc(t('bell.above', { n: fmtDec(c.sigmas_above_classical, 1) }))
+            : esc(t('bell.below'))}
+        </span>
+      </div>
+
+      <div class="bell-gauge" dir="ltr">
+        <div class="bell-marks">
+          <span class="bell-lg-mid" style="left:${pct(c.classical_bound)}">${fmtDec(c.classical_bound, 0)} · ${esc(t('bell.classical'))}</span>
+        </div>
+        <div class="bell-track">
+          <span class="bell-fill" style="width:${pct(c.s)}"></span>
+          <span class="bell-bound" style="left:${pct(c.classical_bound)}"></span>
+          <span class="bell-dot" style="left:${pct(c.s)}"></span>
+        </div>
+        <div class="bell-legend">
+          <span>0</span>
+          <span>${fmtDec(max, 3)} · ${esc(t('bell.tsirelson'))}</span>
+        </div>
+      </div>
+
+      <p class="bell-setup">${esc(t('bell.setup', {
+        qa: c.qubits?.[0] ?? '?',
+        qb: c.qubits?.[1] ?? '?',
+        backend: src.backend ?? '?',
+        shots: fmtNum(c.settings[0]?.shots ?? 0),
+      }))}</p>
+
+      <div class="bell-rows">${rows}</div>
+      <p class="bell-caveat">${esc(t('bell.caveat'))}</p>
+    </div>`;
 }
 
 async function loadRecent() {
@@ -961,7 +1046,7 @@ function render() {
   home.classList.remove('hide');
   resetSubmit();
   loadStats();
-  loadPoolNote();
+  loadPool();
   loadRecent();
   if (location.hash) {
     document.querySelector(location.hash)?.scrollIntoView({ behavior: 'smooth' });
