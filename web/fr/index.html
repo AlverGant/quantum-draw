@@ -9,17 +9,27 @@
 <meta name="theme-color" content="#06070d">
 <link rel="canonical" href="https://sorteio.vynstream.com/fr/">
 
-<!-- Uma página serve os 8 idiomas e troca por JS. hreflang diz ao Google que
-     é conteúdo equivalente, não duplicado, e qual servir a cada região. -->
+<!-- Cada idioma tem página própria em /<lang>/, gerada por build_pages.py com
+     título e descrição traduzidos no HTML servido. O hreflang precisa apontar
+     para ELAS.
+
+     Apontava para /?lang=pt, e isso custava a indexação em português: a query
+     não muda o HTML estático (a troca de idioma é por JS), então /?lang=pt é
+     byte a byte igual a / e cai no canonical da raiz, que é a página em
+     inglês. O sinal de "esta é a versão portuguesa" ia parar na página errada,
+     e uma busca por "sorteio quântico" devolvia o título em inglês.
+
+     Este bloco é copiado sem alteração para /pt/, /es/… — é o que dá a
+     reciprocidade e a autorreferência que o Google exige do conjunto. -->
 <link rel="alternate" hreflang="x-default" href="https://sorteio.vynstream.com/">
-<link rel="alternate" hreflang="en" href="https://sorteio.vynstream.com/?lang=en">
-<link rel="alternate" hreflang="pt" href="https://sorteio.vynstream.com/?lang=pt">
-<link rel="alternate" hreflang="es" href="https://sorteio.vynstream.com/?lang=es">
-<link rel="alternate" hreflang="fr" href="https://sorteio.vynstream.com/?lang=fr">
-<link rel="alternate" hreflang="zh" href="https://sorteio.vynstream.com/?lang=zh">
-<link rel="alternate" hreflang="hi" href="https://sorteio.vynstream.com/?lang=hi">
-<link rel="alternate" hreflang="ar" href="https://sorteio.vynstream.com/?lang=ar">
-<link rel="alternate" hreflang="ru" href="https://sorteio.vynstream.com/?lang=ru">
+<link rel="alternate" hreflang="en" href="https://sorteio.vynstream.com/">
+<link rel="alternate" hreflang="pt" href="https://sorteio.vynstream.com/pt/">
+<link rel="alternate" hreflang="es" href="https://sorteio.vynstream.com/es/">
+<link rel="alternate" hreflang="fr" href="https://sorteio.vynstream.com/fr/">
+<link rel="alternate" hreflang="zh" href="https://sorteio.vynstream.com/zh/">
+<link rel="alternate" hreflang="hi" href="https://sorteio.vynstream.com/hi/">
+<link rel="alternate" hreflang="ar" href="https://sorteio.vynstream.com/ar/">
+<link rel="alternate" hreflang="ru" href="https://sorteio.vynstream.com/ru/">
 
 <meta property="og:title" content="Tirage Quantique — tirage au sort en ligne vérifiable">
 <meta property="og:description" content="Tirage au sort en ligne gratuit, décidé par une mesure quantique sur du matériel IBM réel, avec une preuve vérifiable par tous.">

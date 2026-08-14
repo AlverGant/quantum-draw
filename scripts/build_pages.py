@@ -480,19 +480,25 @@ def build_sitemap(lang_paths: list[str], lottery_paths: list[str]) -> str:
         f'    <xhtml:link rel="alternate" hreflang="{lg}" href="{BASE}{p}"/>'
         for lg, p in LANG_PATHS.items()
     )
+    # O conjunto vai em TODAS as URLs do grupo, não só na raiz: o Google exige
+    # que cada página do cluster liste o cluster inteiro, inclusive ela mesma.
+    # Só na raiz, as versões traduzidas ficam sem vínculo de volta e o sinal de
+    # idioma se perde — foi o que fez uma busca em português cair no /.
+    group = f"""    <xhtml:link rel="alternate" hreflang="x-default" href="{BASE}/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="{BASE}/"/>
+{alts}"""
     entries = [f"""  <url>
     <loc>{BASE}/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="x-default" href="{BASE}/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="{BASE}/"/>
-{alts}
+{group}
   </url>"""]
     for p in lang_paths:
         entries.append(f"""  <url>
     <loc>{BASE}{p}</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
+{group}
   </url>""")
     for p in lottery_paths:
         entries.append(f"""  <url>
