@@ -4,6 +4,7 @@
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://sorteio.vynstream.com/</loc>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://sorteio.vynstream.com/"/>
@@ -18,6 +19,7 @@
   </url>
   <url>
     <loc>https://sorteio.vynstream.com/pt/</loc>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://sorteio.vynstream.com/"/>
@@ -32,6 +34,7 @@
   </url>
   <url>
     <loc>https://sorteio.vynstream.com/es/</loc>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://sorteio.vynstream.com/"/>
@@ -46,6 +49,7 @@
   </url>
   <url>
     <loc>https://sorteio.vynstream.com/fr/</loc>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://sorteio.vynstream.com/"/>
@@ -60,6 +64,7 @@
   </url>
   <url>
     <loc>https://sorteio.vynstream.com/zh/</loc>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://sorteio.vynstream.com/"/>
@@ -74,6 +79,7 @@
   </url>
   <url>
     <loc>https://sorteio.vynstream.com/hi/</loc>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://sorteio.vynstream.com/"/>
@@ -88,6 +94,7 @@
   </url>
   <url>
     <loc>https://sorteio.vynstream.com/ar/</loc>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://sorteio.vynstream.com/"/>
@@ -102,6 +109,7 @@
   </url>
   <url>
     <loc>https://sorteio.vynstream.com/ru/</loc>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://sorteio.vynstream.com/"/>
@@ -116,51 +124,61 @@
   </url>
   <url>
     <loc>https://sorteio.vynstream.com/pt/mega-sena</loc>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://sorteio.vynstream.com/pt/lotofacil</loc>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://sorteio.vynstream.com/pt/quina</loc>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://sorteio.vynstream.com/pt/lotomania</loc>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://sorteio.vynstream.com/pt/dupla-sena</loc>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://sorteio.vynstream.com/pt/timemania</loc>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://sorteio.vynstream.com/pt/dia-de-sorte</loc>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://sorteio.vynstream.com/pt/super-sete</loc>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://sorteio.vynstream.com/pt/mais-milionaria</loc>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://sorteio.vynstream.com/verificar</loc>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>

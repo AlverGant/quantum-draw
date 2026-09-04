@@ -28,6 +28,7 @@ import json
 import os
 import re
 import subprocess
+from datetime import datetime
 from math import comb
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
@@ -185,6 +186,26 @@ def hreflangs(path_by_lang: dict[str, str]) -> str:
     for lg, p in path_by_lang.items():
         out.append(f'<link rel="alternate" hreflang="{lg}" href="{BASE}{p}">')
     return "\n".join(out)
+
+
+# O <lastmod> de cada grupo de páginas sai do mtime destes arquivos: são eles
+# que determinam o conteúdo gerado. As páginas em web/ não servem de fonte —
+# são reescritas a cada execução, e a data delas seria a hora do build.
+APP_SOURCES = (os.path.join(WEB, "index.html"),
+               os.path.join(WEB, "i18n.js"),
+               os.path.abspath(__file__))
+LOTTERY_SOURCES = (os.path.abspath(__file__),)
+
+
+def source_date(paths) -> str:
+    """Data da última alteração do conteúdo, no formato do sitemap.
+
+    Um <lastmod> que pula para hoje toda vez que alguém roda o script é ruído:
+    o Google compara o campo com o que muda de fato na página e passa a
+    ignorá-lo quando a data não se sustenta. Melhor uma data parada, que é
+    verdade, do que a data do build, que não é.
+    """
+    return datetime.fromtimestamp(max(os.path.getmtime(p) for p in paths)).strftime("%Y-%m-%d")
 
 
 LANG_PATHS = {lg: f"/{lg}/" for lg in LANGS}
@@ -667,7 +688,10 @@ def lottery_page(lot: dict) -> str:
 <footer>
   <div class="wrap">
     <span>Entropia quântica de hardware da IBM, selada sob raiz de Merkle, misturada a um farol público do drand.</span>
-    <span><a href="mailto:contact@stellardev.dev">contact@stellardev.dev</a></span>
+    <span>
+      <a href="https://quantum.vynstream.com" style="margin-inline-end:14px">Fatoração Quântica ↗</a>
+      <a href="mailto:contact@stellardev.dev">contact@stellardev.dev</a>
+    </span>
   </div>
 </footer>
 </body>
@@ -676,6 +700,8 @@ def lottery_page(lot: dict) -> str:
 
 
 def build_sitemap(lang_paths: list[str], lottery_paths: list[str]) -> str:
+    app_mod = source_date(APP_SOURCES)
+    lot_mod = source_date(LOTTERY_SOURCES)
     alts = "\n".join(
         f'    <xhtml:link rel="alternate" hreflang="{lg}" href="{BASE}{p}"/>'
         for lg, p in LANG_PATHS.items()
@@ -689,6 +715,7 @@ def build_sitemap(lang_paths: list[str], lottery_paths: list[str]) -> str:
 {alts}"""
     entries = [f"""  <url>
     <loc>{BASE}/</loc>
+    <lastmod>{app_mod}</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
 {group}
@@ -696,6 +723,7 @@ def build_sitemap(lang_paths: list[str], lottery_paths: list[str]) -> str:
     for p in lang_paths:
         entries.append(f"""  <url>
     <loc>{BASE}{p}</loc>
+    <lastmod>{app_mod}</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
 {group}
@@ -703,11 +731,13 @@ def build_sitemap(lang_paths: list[str], lottery_paths: list[str]) -> str:
     for p in lottery_paths:
         entries.append(f"""  <url>
     <loc>{BASE}{p}</loc>
+    <lastmod>{lot_mod}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>""")
     entries.append(f"""  <url>
     <loc>{BASE}/verificar</loc>
+    <lastmod>{app_mod}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>""")

@@ -118,6 +118,7 @@ export const STRINGS = {
     "draw.untitled": "Draw",
     "draw.lockedLot": "Settings locked",
     'footer.tag': 'Quantum entropy from IBM hardware, sealed under a Merkle root, mixed with a public drand beacon.',
+    'footer.sib': 'Quantum Factoring ↗',
   },
 
   pt: {
@@ -212,6 +213,7 @@ export const STRINGS = {
     "draw.untitled": "Sorteio",
     "draw.lockedLot": "Configuração travada",
     'footer.tag': 'Entropia quântica de hardware da IBM, selada sob raiz de Merkle, misturada a um farol público do drand.',
+    'footer.sib': 'Fatoração Quântica ↗',
   },
 
   es: {
@@ -306,6 +308,7 @@ export const STRINGS = {
     "draw.untitled": "Sorteo",
     "draw.lockedLot": "Configuración sellada",
     'footer.tag': 'Entropía cuántica de hardware de IBM, sellada bajo una raíz de Merkle, mezclada con un faro público de drand.',
+    'footer.sib': 'Factorización Cuántica ↗',
   },
 
   fr: {
@@ -400,6 +403,7 @@ export const STRINGS = {
     "draw.untitled": "Tirage",
     "draw.lockedLot": "Réglages scellés",
     'footer.tag': 'Entropie quantique du matériel IBM, scellée sous une racine de Merkle, mêlée à une balise publique drand.',
+    'footer.sib': 'Factorisation Quantique ↗',
   },
 
   zh: {
@@ -494,6 +498,7 @@ export const STRINGS = {
     "draw.untitled": "抽奖",
     "draw.lockedLot": "设置已锁定",
     'footer.tag': '来自 IBM 硬件的量子熵，封存于 Merkle 根之下，并与 drand 公共信标混合。',
+    'footer.sib': '量子因数分解 ↗',
   },
 
   hi: {
@@ -588,6 +593,7 @@ export const STRINGS = {
     "draw.untitled": "ड्रॉ",
     "draw.lockedLot": "सेटिंग बंद",
     'footer.tag': 'IBM हार्डवेयर से क्वांटम एन्ट्रॉपी, Merkle रूट के तहत सील, drand सार्वजनिक बीकन के साथ मिश्रित।',
+    'footer.sib': 'क्वांटम गुणनखंडन ↗',
   },
 
   ar: {
@@ -682,6 +688,7 @@ export const STRINGS = {
     "draw.untitled": "سحب",
     "draw.lockedLot": "الإعدادات مقفلة",
     'footer.tag': 'عشوائية كمّية من عتاد IBM، مختومة تحت جذر Merkle، ممزوجة بمنارة drand العامة.',
+    'footer.sib': 'التحليل الكمومي إلى عوامل ↗',
   },
 
   ru: {
@@ -776,6 +783,7 @@ export const STRINGS = {
     "draw.untitled": "Розыгрыш",
     "draw.lockedLot": "Настройки запечатаны",
     'footer.tag': 'Квантовая энтропия с оборудования IBM, запечатанная под корнем Меркла и смешанная с публичным маяком drand.',
+    'footer.sib': 'Квантовая факторизация ↗',
   },
 };
 
