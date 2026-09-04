@@ -9,8 +9,14 @@
 <meta name="theme-color" content="#06070d">
 <link rel="canonical" href="https://sorteio.vynstream.com/ru/">
 
-<!-- Cada idioma tem página própria em /<lang>/, gerada por build_pages.py com
-     título e descrição traduzidos no HTML servido. O hreflang precisa apontar
+<!-- hreflang:início — build_pages.py recorta daqui até hreflang:fim ao gerar
+     /verificar, que tem uma URL só para os oito idiomas e não pertence a este
+     grupo. Copiado para lá, o bloco anunciava um conjunto que não a lista de
+     volta: anotação sem reciprocidade, descartada pelo Google e mais um ruído
+     na escolha do canonical.
+
+     Cada idioma tem página própria em /<lang>/, gerada por build_pages.py com
+     o conteúdo inteiro traduzido no HTML servido. O hreflang precisa apontar
      para ELAS.
 
      Apontava para /?lang=pt, e isso custava a indexação em português: a query
@@ -30,6 +36,7 @@
 <link rel="alternate" hreflang="hi" href="https://sorteio.vynstream.com/hi/">
 <link rel="alternate" hreflang="ar" href="https://sorteio.vynstream.com/ar/">
 <link rel="alternate" hreflang="ru" href="https://sorteio.vynstream.com/ru/">
+<!-- hreflang:fim -->
 
 <meta property="og:title" content="Квантовый розыгрыш — онлайн-рандомайзер с публичным доказательством">
 <meta property="og:description" content="Бесплатный онлайн-рандомайзер: номера получены квантовым измерением на реальном оборудовании IBM, с доказательством, которое может проверить каждый.">
@@ -41,8 +48,8 @@
 <meta property="og:image:height" content="630">
 <meta property="og:site_name" content="Quantum Draw">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Quantum Draw — provably fair raffles">
-<meta name="twitter:description" content="Raffles and lottery numbers from real quantum hardware, with a proof anyone can verify.">
+<meta name="twitter:title" content="Квантовый розыгрыш — онлайн-рандомайзер с публичным доказательством">
+<meta name="twitter:description" content="Бесплатный онлайн-рандомайзер: номера получены квантовым измерением на реальном оборудовании IBM, с доказательством, которое может проверить каждый.">
 <meta name="twitter:image" content="https://sorteio.vynstream.com/assets/og.png">
 
 <link rel="stylesheet" href="/styles.css">
@@ -78,7 +85,7 @@
 
 <header>
   <div class="wrap bar">
-    <a class="brand" href="/" data-nav>
+    <a class="brand" href="/ru/" data-nav>
       <svg width="27" height="27" viewBox="0 0 32 32" aria-hidden="true">
         <circle cx="16" cy="16" r="13" fill="none" stroke="#8b6cf6" stroke-width="2.2"/>
         <ellipse cx="16" cy="16" rx="13" ry="5" fill="none" stroke="#35e6d4" stroke-width="1.8"/>
@@ -89,16 +96,16 @@
     </a>
 
     <nav class="links">
-      <a href="/#create"   data-nav data-i18n="nav.create">Create</a>
-      <a href="/#how"      data-nav data-i18n="nav.how">How it works</a>
-      <a href="/verificar" data-nav data-i18n="nav.verify">Verify</a>
+      <a href="/ru/#create"   data-nav data-i18n="nav.create">Создать</a>
+      <a href="/ru/#how"      data-nav data-i18n="nav.how">Как это работает</a>
+      <a href="/verificar" data-nav data-i18n="nav.verify">Проверить</a>
 
       <div class="lang" id="lang">
         <button type="button" id="lang-btn" aria-haspopup="true" aria-expanded="false">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20a15 15 0 0 1 0-20"/>
           </svg>
-          <span id="lang-current">English</span>
+          <span id="lang-current">Русский</span>
         </button>
         <ul id="lang-list" role="menu"></ul>
       </div>
@@ -113,51 +120,53 @@
 
   <section class="hero">
     <div class="wrap">
-      <span class="eyebrow"><i class="dot"></i><span data-i18n="hero.badge">Live quantum entropy</span></span>
-      <h1><span data-i18n="hero.h1a">Raffles nobody can</span> <em data-i18n="hero.h1em">rig</em></h1>
-      <p class="lede" data-i18n="hero.lede"></p>
+      <span class="eyebrow"><i class="dot"></i><span data-i18n="hero.badge">Живая квантовая энтропия</span></span>
+      <h1><span data-i18n="hero.h1a">Розыгрыши, которые невозможно</span> <em data-i18n="hero.h1em">подтасовать</em></h1>
+      <p class="lede" data-i18n="hero.lede">Победителя определяет квантовое измерение, зафиксированное ещё до того, как появился ваш список, смешанное с публичным маяком, который никто не может предсказать. К каждому розыгрышу прилагается доказательство, которое вы проверите сами.</p>
       <div class="cta-row">
-        <a class="btn btn-primary" href="/#create" data-nav data-i18n="hero.cta">Run a draw</a>
-        <a class="btn btn-ghost" href="/verificar" data-nav data-i18n="hero.cta2">Verify a draw</a>
+        <a class="btn btn-primary" href="/ru/#create" data-nav data-i18n="hero.cta">Провести розыгрыш</a>
+        <a class="btn btn-ghost" href="/verificar" data-nav data-i18n="hero.cta2">Проверить розыгрыш</a>
       </div>
 
       <div class="stats" id="stats">
-        <div class="stat-card"><span class="n" data-stat="unique_visitors">—</span><span class="k" data-i18n="stats.visitors">Visitors</span></div>
-        <div class="stat-card"><span class="n" data-stat="pageviews">—</span><span class="k" data-i18n="stats.pageviews">Page views</span></div>
-        <div class="stat-card"><span class="n" data-stat="draws_completed">—</span><span class="k" data-i18n="stats.draws">Draws held</span></div>
-        <div class="stat-card"><span class="n" data-stat="participants_total">—</span><span class="k" data-i18n="stats.participants">Entries</span></div>
-        <div class="stat-card"><span class="n" data-stat="countries">—</span><span class="k" data-i18n="stats.countries">Countries</span></div>
+        <div class="stat-card"><span class="n" data-stat="unique_visitors">—</span><span class="k" data-i18n="stats.visitors">Посетители</span></div>
+        <div class="stat-card"><span class="n" data-stat="pageviews">—</span><span class="k" data-i18n="stats.pageviews">Просмотры</span></div>
+        <div class="stat-card"><span class="n" data-stat="draws_completed">—</span><span class="k" data-i18n="stats.draws">Розыгрышей проведено</span></div>
+        <div class="stat-card"><span class="n" data-stat="participants_total">—</span><span class="k" data-i18n="stats.participants">Заявки</span></div>
+        <div class="stat-card"><span class="n" data-stat="countries">—</span><span class="k" data-i18n="stats.countries">Страны</span></div>
       </div>
     </div>
   </section>
 
   <section id="create">
     <div class="wrap">
-      <h2 data-i18n="form.h2">Create a draw</h2>
-      <p class="sub" data-i18n="form.sub"></p>
+      <h2 data-i18n="form.h2">Создать розыгрыш</h2>
+      <p class="sub" data-i18n="form.sub">Ваш список запечатывается хешем до того, как появится случайность. Никто — включая нас — не может узнать результат заранее.</p>
 
       <div class="card form-card">
         <div id="pool-note"></div>
         <div id="form-error" class="alert alert-error hide"></div>
 
         <div class="modes" role="tablist">
-          <button type="button" class="mode on" data-mode="list" role="tab" data-i18n="mode.list">Draw from a list</button>
-          <button type="button" class="mode" data-mode="lottery" role="tab" data-i18n="mode.lottery">Generate lottery games</button>
+          <button type="button" class="mode on" data-mode="list" role="tab" data-i18n="mode.list">Розыгрыш по списку</button>
+          <button type="button" class="mode" data-mode="lottery" role="tab" data-i18n="mode.lottery">Сгенерировать номера</button>
         </div>
 
         <form id="draw-form" novalidate>
           <div class="field">
-            <label for="f-title" data-i18n="form.titleOpt">What is the draw for? (optional)</label>
-            <input type="text" id="f-title" maxlength="140" data-i18n-ph="form.titlePh">
+            <label for="f-title" data-i18n="form.titleOpt">Что разыгрываем? (необязательно)</label>
+            <input type="text" id="f-title" maxlength="140" data-i18n-ph="form.titlePh" placeholder="например: 3 билета на концерт">
           </div>
 
           <!-- modo: sortear uma lista -->
           <div data-pane="list">
             <div class="field">
-              <label for="f-list" data-i18n="form.list">Participants, one per line</label>
-              <textarea id="f-list" data-i18n-ph="form.listPh"></textarea>
+              <label for="f-list" data-i18n="form.list">Участники, по одному в строке</label>
+              <textarea id="f-list" data-i18n-ph="form.listPh" placeholder="Ana
+Bruno
+Carla"></textarea>
               <div class="field-hint">
-                <span data-i18n="form.listHint"></span>
+                <span data-i18n="form.listHint">Повтор имени даёт ему больше шансов.</span>
                 <strong id="f-count" style="color:var(--cyan)"></strong>
               </div>
             </div>
@@ -166,46 +175,46 @@
           <!-- modo: gerar jogos de loteria -->
           <div data-pane="lottery" class="hide">
             <div class="field">
-              <label for="f-lottery" data-i18n="lot.game">Lottery</label>
+              <label for="f-lottery" data-i18n="lot.game">Лотерея</label>
               <select id="f-lottery"></select>
               <span class="field-hint" id="f-lot-rule"></span>
             </div>
             <div class="row-2">
               <div class="field">
-                <label for="f-games" data-i18n="lot.games">How many games?</label>
+                <label for="f-games" data-i18n="lot.games">Сколько билетов?</label>
                 <input type="number" id="f-games" min="1" max="100" value="1">
               </div>
               <div class="field">
-                <label for="f-picks" data-i18n="lot.picks">Numbers per game</label>
+                <label for="f-picks" data-i18n="lot.picks">Номеров в билете</label>
                 <input type="number" id="f-picks">
               </div>
             </div>
             <div class="field hide" id="f-extra-wrap">
-              <label for="f-extra" data-i18n="lot.extra">Clovers per game</label>
+              <label for="f-extra" data-i18n="lot.extra">Клеверов в билете</label>
               <input type="number" id="f-extra" min="2" max="6" value="2">
             </div>
             <p class="field-hint cost-hint" id="f-cost"></p>
-            <p class="field-hint" style="margin-bottom:18px" data-i18n="lot.odds"></p>
+            <p class="field-hint" style="margin-bottom:18px" data-i18n="lot.odds">Квантовая случайность не увеличивает шансы. Ничто не увеличивает. Она даёт доказательство момента генерации номеров.</p>
           </div>
 
           <div class="row-2">
             <div class="field" data-pane="list">
-              <label for="f-winners" data-i18n="form.winners">How many winners?</label>
+              <label for="f-winners" data-i18n="form.winners">Сколько победителей?</label>
               <input type="number" id="f-winners" min="1" value="1">
             </div>
             <div class="field" style="display:flex;align-items:flex-end">
               <label class="check" style="margin-bottom:12px">
                 <input type="checkbox" id="f-public">
                 <span>
-                  <span data-i18n="form.public">Show on the public list</span>
-                  <span class="field-hint" style="margin-top:2px" data-i18n="form.publicHint"></span>
+                  <span data-i18n="form.public">Показывать в публичном списке</span>
+                  <span class="field-hint" style="margin-top:2px" data-i18n="form.publicHint">Страница доказательства в любом случае доступна по ссылке.</span>
                 </span>
               </label>
             </div>
           </div>
 
           <button type="submit" class="btn btn-primary" id="f-submit" style="width:100%">
-            <span data-i18n="form.submit">Lock the list and draw</span>
+            <span data-i18n="form.submit">Запечатать список и разыграть</span>
           </button>
         </form>
       </div>
@@ -214,32 +223,39 @@
 
   <section id="how">
     <div class="wrap">
-      <h2 data-i18n="how.h2">How it works</h2>
-      <p class="sub" data-i18n="how.sub"></p>
+      <h2 data-i18n="how.h2">Как это работает</h2>
+      <p class="sub" data-i18n="how.sub">Четыре шага, и каждый может проверить посторонний.</p>
       <div class="steps">
-        <div class="step"><span class="num">01</span><h3 data-i18n="how.s1t"></h3><p data-i18n="how.s1b"></p></div>
-        <div class="step"><span class="num">02</span><h3 data-i18n="how.s2t"></h3><p data-i18n="how.s2b"></p></div>
-        <div class="step"><span class="num">03</span><h3 data-i18n="how.s3t"></h3><p data-i18n="how.s3b"></p></div>
-        <div class="step"><span class="num">04</span><h3 data-i18n="how.s4t"></h3><p data-i18n="how.s4b"></p></div>
+        <div class="step"><span class="num">01</span><h3 data-i18n="how.s1t">Квантовая энтропия, собранная заранее</h3><p data-i18n="how.s1b">Мы переводим кубиты оборудования IBM в суперпозицию и измеряем их. Результаты режутся на импульсы и запечатываются под корнем Меркла, опубликованным до появления любого розыгрыша.</p></div>
+        <div class="step"><span class="num">02</span><h3 data-i18n="how.s2t">Ваш список фиксируется</h3><p data-i18n="how.s2b">При создании розыгрыша мы хешируем список, число победителей и точный будущий импульс, который будет использован. Любое изменение потом ломает хеш.</p></div>
+        <div class="step"><span class="num">03</span><h3 data-i18n="how.s3t">Маяк, который никто не контролирует</h3><p data-i18n="how.s3b">В зерно также подмешивается будущий раунд drand. На момент фиксации его ещё не существует, так что даже мы не можем выбрать удобный импульс.</p></div>
+        <div class="step"><span class="num">04</span><h3 data-i18n="how.s4t">Пересчитать может любой</h3><p data-i18n="how.s4b">С доказательством перемешивание детерминировано. Наш верификатор работает в вашем браузере и берёт маяк напрямую из drand, минуя наши серверы.</p></div>
       </div>
     </div>
   </section>
 
   <section id="bell" class="hide">
     <div class="wrap">
-      <h2 data-i18n="bell.h2">The Bell test</h2>
-      <p class="sub" data-i18n="bell.sub"></p>
+      <h2 data-i18n="bell.h2">Тест Белла</h2>
+      <p class="sub" data-i18n="bell.sub">К каждому пулу прилагается тест CHSH, выполненный в том же задании, что и сбор энтропии. Хорошо распределённые числа сами по себе ничего не доказывают — классический генератор выдаёт такие же. Это измерение, которое классический генератор подделать не может.</p>
       <div id="bell-body"></div>
     </div>
   </section>
 
   <section id="recent">
     <div class="wrap">
-      <h2 data-i18n="recent.h2">Recent draws</h2>
+      <h2 data-i18n="recent.h2">Недавние розыгрыши</h2>
       <div class="recent-grid" id="recent-grid"></div>
     </div>
   </section>
 
+  <!-- Preenchido por build_pages.py, e só em /pt/ — as páginas de loteria são
+       conteúdo em português sobre a Caixa. Sem estes links elas eram órfãs:
+       existiam no sitemap e em nenhum outro lugar do site. É o que as deixava
+       em "Discovered - currently not indexed" no Search Console; URL que só
+       aparece no sitemap fica no fim da fila de rastreamento. Vazio nos outros
+       idiomas, e a regra :empty tira a seção do layout. -->
+  <section id="lottery-links"></section>
 
 </div>
 
@@ -256,16 +272,16 @@
 <div id="view-verify" class="hide">
   <section>
     <div class="wrap" style="max-width:820px">
-      <h2 data-i18n="verify.h2">Verify a draw</h2>
-      <p class="sub" data-i18n="verify.sub"></p>
+      <h2 data-i18n="verify.h2">Проверить розыгрыш</h2>
+      <p class="sub" data-i18n="verify.sub">Всё выполняется в вашем браузере. Маяк берётся напрямую из drand.</p>
 
       <div class="card">
         <div class="field">
-          <label for="v-input" data-i18n="verify.input">Draw link or code</label>
-          <input type="text" id="v-input" data-i18n-ph="verify.inputPh">
+          <label for="v-input" data-i18n="verify.input">Ссылка или код розыгрыша</label>
+          <input type="text" id="v-input" data-i18n-ph="verify.inputPh" placeholder="например k3m9x2vqb7">
         </div>
         <button class="btn btn-primary" id="v-run" style="width:100%">
-          <span data-i18n="verify.run">Run verification</span>
+          <span data-i18n="verify.run">Запустить проверку</span>
         </button>
         <div id="v-steps" style="margin-top:24px"></div>
         <div id="v-verdict"></div>
@@ -278,12 +294,28 @@
 
 <footer>
   <div class="wrap">
-    <span data-i18n="footer.tag"></span>
+    <span data-i18n="footer.tag">Квантовая энтропия с оборудования IBM, запечатанная под корнем Меркла и смешанная с публичным маяком drand.</span>
     <span>
       <a href="mailto:contact@stellardev.dev">contact@stellardev.dev</a>
       <span class="mono" style="opacity:.6;margin-inline-start:14px">qdraw-v1</span>
     </span>
   </div>
+
+  <!-- O seletor do cabeçalho é um menu montado por JS: confortável de usar,
+       invisível para o rastreador. Estes são os únicos links de verdade entre
+       as versões de idioma — sem eles, /pt/, /es/… só existiam no sitemap e no
+       hreflang, que sinaliza a relação mas não é caminho de rastreamento.
+       Gerado por build_pages.py a partir de LANGS. -->
+  <nav class="wrap langs" id="langs" aria-label="Language">
+    <a href="/" hreflang="en" lang="en">English</a>
+    <a href="/pt/" hreflang="pt" lang="pt">Português</a>
+    <a href="/es/" hreflang="es" lang="es">Español</a>
+    <a href="/fr/" hreflang="fr" lang="fr">Français</a>
+    <a href="/zh/" hreflang="zh" lang="zh">中文</a>
+    <a href="/hi/" hreflang="hi" lang="hi">हिन्दी</a>
+    <a href="/ar/" hreflang="ar" lang="ar">العربية</a>
+    <a href="/ru/" hreflang="ru" lang="ru" aria-current="page">Русский</a>
+  </nav>
 </footer>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">

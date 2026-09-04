@@ -3,36 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Verificar um sorteio — Quantum Draw</title>
-<meta name="description" id="meta-desc" content="Confira você mesmo qualquer sorteio: a verificação roda no seu navegador e busca o farol público direto no drand, sem passar pelos nossos servidores.">
+<title>Verify a draw — Quantum Draw</title>
+<meta name="description" id="meta-desc" content="Check any draw yourself: verification runs in your own browser and fetches the public beacon straight from drand, without going through our servers.">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#06070d">
 <link rel="canonical" href="https://sorteio.vynstream.com/verificar">
 
-<!-- Cada idioma tem página própria em /<lang>/, gerada por build_pages.py com
-     título e descrição traduzidos no HTML servido. O hreflang precisa apontar
-     para ELAS.
 
-     Apontava para /?lang=pt, e isso custava a indexação em português: a query
-     não muda o HTML estático (a troca de idioma é por JS), então /?lang=pt é
-     byte a byte igual a / e cai no canonical da raiz, que é a página em
-     inglês. O sinal de "esta é a versão portuguesa" ia parar na página errada,
-     e uma busca por "sorteio quântico" devolvia o título em inglês.
-
-     Este bloco é copiado sem alteração para /pt/, /es/… — é o que dá a
-     reciprocidade e a autorreferência que o Google exige do conjunto. -->
-<link rel="alternate" hreflang="x-default" href="https://sorteio.vynstream.com/">
-<link rel="alternate" hreflang="en" href="https://sorteio.vynstream.com/">
-<link rel="alternate" hreflang="pt" href="https://sorteio.vynstream.com/pt/">
-<link rel="alternate" hreflang="es" href="https://sorteio.vynstream.com/es/">
-<link rel="alternate" hreflang="fr" href="https://sorteio.vynstream.com/fr/">
-<link rel="alternate" hreflang="zh" href="https://sorteio.vynstream.com/zh/">
-<link rel="alternate" hreflang="hi" href="https://sorteio.vynstream.com/hi/">
-<link rel="alternate" hreflang="ar" href="https://sorteio.vynstream.com/ar/">
-<link rel="alternate" hreflang="ru" href="https://sorteio.vynstream.com/ru/">
-
-<meta property="og:title" content="Quantum Draw — provably fair raffles">
-<meta property="og:description" content="Raffles and lottery numbers decided by quantum measurement on real IBM hardware. Every draw ships a proof you can check yourself.">
+<meta property="og:title" content="Verify a draw — Quantum Draw">
+<meta property="og:description" content="Check any draw yourself: verification runs in your own browser and fetches the public beacon straight from drand, without going through our servers.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://sorteio.vynstream.com/verificar">
 <meta property="og:image" content="https://sorteio.vynstream.com/assets/og.png">
@@ -40,8 +19,8 @@
 <meta property="og:image:height" content="630">
 <meta property="og:site_name" content="Quantum Draw">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Quantum Draw — provably fair raffles">
-<meta name="twitter:description" content="Raffles and lottery numbers from real quantum hardware, with a proof anyone can verify.">
+<meta name="twitter:title" content="Verify a draw — Quantum Draw">
+<meta name="twitter:description" content="Check any draw yourself: verification runs in your own browser and fetches the public beacon straight from drand, without going through our servers.">
 <meta name="twitter:image" content="https://sorteio.vynstream.com/assets/og.png">
 
 <link rel="stylesheet" href="/styles.css">
@@ -114,7 +93,7 @@
     <div class="wrap">
       <span class="eyebrow"><i class="dot"></i><span data-i18n="hero.badge">Live quantum entropy</span></span>
       <h1><span data-i18n="hero.h1a">Raffles nobody can</span> <em data-i18n="hero.h1em">rig</em></h1>
-      <p class="lede" data-i18n="hero.lede"></p>
+      <p class="lede" data-i18n="hero.lede">The winner is decided by a quantum measurement committed before your list exists, mixed with a public beacon nobody can predict. Every draw ships a proof you can check yourself.</p>
       <div class="cta-row">
         <a class="btn btn-primary" href="/#create" data-nav data-i18n="hero.cta">Run a draw</a>
         <a class="btn btn-ghost" href="/verificar" data-nav data-i18n="hero.cta2">Verify a draw</a>
@@ -133,7 +112,7 @@
   <section id="create">
     <div class="wrap">
       <h2 data-i18n="form.h2">Create a draw</h2>
-      <p class="sub" data-i18n="form.sub"></p>
+      <p class="sub" data-i18n="form.sub">Your list is locked with a hash before the randomness exists. Nobody — including us — can know the result in advance.</p>
 
       <div class="card form-card">
         <div id="pool-note"></div>
@@ -147,16 +126,18 @@
         <form id="draw-form" novalidate>
           <div class="field">
             <label for="f-title" data-i18n="form.titleOpt">What is the draw for? (optional)</label>
-            <input type="text" id="f-title" maxlength="140" data-i18n-ph="form.titlePh">
+            <input type="text" id="f-title" maxlength="140" data-i18n-ph="form.titlePh" placeholder="e.g. 3 tickets for the show">
           </div>
 
           <!-- modo: sortear uma lista -->
           <div data-pane="list">
             <div class="field">
               <label for="f-list" data-i18n="form.list">Participants, one per line</label>
-              <textarea id="f-list" data-i18n-ph="form.listPh"></textarea>
+              <textarea id="f-list" data-i18n-ph="form.listPh" placeholder="Ana
+Bruno
+Carla"></textarea>
               <div class="field-hint">
-                <span data-i18n="form.listHint"></span>
+                <span data-i18n="form.listHint">Repeating a name gives it more chances.</span>
                 <strong id="f-count" style="color:var(--cyan)"></strong>
               </div>
             </div>
@@ -184,7 +165,7 @@
               <input type="number" id="f-extra" min="2" max="6" value="2">
             </div>
             <p class="field-hint cost-hint" id="f-cost"></p>
-            <p class="field-hint" style="margin-bottom:18px" data-i18n="lot.odds"></p>
+            <p class="field-hint" style="margin-bottom:18px" data-i18n="lot.odds">Quantum randomness does not improve your odds. Nothing does. What it gives you is a proof of when the numbers were generated.</p>
           </div>
 
           <div class="row-2">
@@ -197,7 +178,7 @@
                 <input type="checkbox" id="f-public">
                 <span>
                   <span data-i18n="form.public">Show on the public list</span>
-                  <span class="field-hint" style="margin-top:2px" data-i18n="form.publicHint"></span>
+                  <span class="field-hint" style="margin-top:2px" data-i18n="form.publicHint">The proof page stays reachable by link either way.</span>
                 </span>
               </label>
             </div>
@@ -214,12 +195,12 @@
   <section id="how">
     <div class="wrap">
       <h2 data-i18n="how.h2">How it works</h2>
-      <p class="sub" data-i18n="how.sub"></p>
+      <p class="sub" data-i18n="how.sub">Four steps, all of them checkable by a stranger.</p>
       <div class="steps">
-        <div class="step"><span class="num">01</span><h3 data-i18n="how.s1t"></h3><p data-i18n="how.s1b"></p></div>
-        <div class="step"><span class="num">02</span><h3 data-i18n="how.s2t"></h3><p data-i18n="how.s2b"></p></div>
-        <div class="step"><span class="num">03</span><h3 data-i18n="how.s3t"></h3><p data-i18n="how.s3b"></p></div>
-        <div class="step"><span class="num">04</span><h3 data-i18n="how.s4t"></h3><p data-i18n="how.s4b"></p></div>
+        <div class="step"><span class="num">01</span><h3 data-i18n="how.s1t">Quantum entropy, harvested ahead</h3><p data-i18n="how.s1b">We put qubits on IBM hardware into superposition and measure them. The results are split into pulses and sealed under a Merkle root published before any draw exists.</p></div>
+        <div class="step"><span class="num">02</span><h3 data-i18n="how.s2t">Your list gets committed</h3><p data-i18n="how.s2b">When you create a draw we hash the list, the winner count and the exact future pulse it will use. Changing anything afterwards breaks the hash.</p></div>
+        <div class="step"><span class="num">03</span><h3 data-i18n="how.s3t">A beacon nobody controls</h3><p data-i18n="how.s3b">The seed also mixes in a future drand round. It does not exist yet when you commit, so not even we can pick a pulse that suits us.</p></div>
+        <div class="step"><span class="num">04</span><h3 data-i18n="how.s4t">Anyone can recompute it</h3><p data-i18n="how.s4b">Given the proof, the shuffle is deterministic. Our verifier runs in your browser and fetches the beacon straight from drand — never through our servers.</p></div>
       </div>
     </div>
   </section>
@@ -227,7 +208,7 @@
   <section id="bell" class="hide">
     <div class="wrap">
       <h2 data-i18n="bell.h2">The Bell test</h2>
-      <p class="sub" data-i18n="bell.sub"></p>
+      <p class="sub" data-i18n="bell.sub">Every pool ships a CHSH test run in the same job that harvested the entropy. Well-spread numbers prove nothing on their own — a classical generator makes those too. This is the measurement a classical generator cannot fake.</p>
       <div id="bell-body"></div>
     </div>
   </section>
@@ -239,6 +220,13 @@
     </div>
   </section>
 
+  <!-- Preenchido por build_pages.py, e só em /pt/ — as páginas de loteria são
+       conteúdo em português sobre a Caixa. Sem estes links elas eram órfãs:
+       existiam no sitemap e em nenhum outro lugar do site. É o que as deixava
+       em "Discovered - currently not indexed" no Search Console; URL que só
+       aparece no sitemap fica no fim da fila de rastreamento. Vazio nos outros
+       idiomas, e a regra :empty tira a seção do layout. -->
+  <section id="lottery-links"></section>
 
 </div>
 
@@ -256,12 +244,12 @@
   <section>
     <div class="wrap" style="max-width:820px">
       <h2 data-i18n="verify.h2">Verify a draw</h2>
-      <p class="sub" data-i18n="verify.sub"></p>
+      <p class="sub" data-i18n="verify.sub">This runs entirely in your browser. The beacon is fetched straight from drand.</p>
 
       <div class="card">
         <div class="field">
           <label for="v-input" data-i18n="verify.input">Draw link or code</label>
-          <input type="text" id="v-input" data-i18n-ph="verify.inputPh">
+          <input type="text" id="v-input" data-i18n-ph="verify.inputPh" placeholder="e.g. k3m9x2vqb7">
         </div>
         <button class="btn btn-primary" id="v-run" style="width:100%">
           <span data-i18n="verify.run">Run verification</span>
@@ -277,12 +265,28 @@
 
 <footer>
   <div class="wrap">
-    <span data-i18n="footer.tag"></span>
+    <span data-i18n="footer.tag">Quantum entropy from IBM hardware, sealed under a Merkle root, mixed with a public drand beacon.</span>
     <span>
       <a href="mailto:contact@stellardev.dev">contact@stellardev.dev</a>
       <span class="mono" style="opacity:.6;margin-inline-start:14px">qdraw-v1</span>
     </span>
   </div>
+
+  <!-- O seletor do cabeçalho é um menu montado por JS: confortável de usar,
+       invisível para o rastreador. Estes são os únicos links de verdade entre
+       as versões de idioma — sem eles, /pt/, /es/… só existiam no sitemap e no
+       hreflang, que sinaliza a relação mas não é caminho de rastreamento.
+       Gerado por build_pages.py a partir de LANGS. -->
+  <nav class="wrap langs" id="langs" aria-label="Language">
+    <a href="/" hreflang="en" lang="en" aria-current="page">English</a>
+    <a href="/pt/" hreflang="pt" lang="pt">Português</a>
+    <a href="/es/" hreflang="es" lang="es">Español</a>
+    <a href="/fr/" hreflang="fr" lang="fr">Français</a>
+    <a href="/zh/" hreflang="zh" lang="zh">中文</a>
+    <a href="/hi/" hreflang="hi" lang="hi">हिन्दी</a>
+    <a href="/ar/" hreflang="ar" lang="ar">العربية</a>
+    <a href="/ru/" hreflang="ru" lang="ru">Русский</a>
+  </nav>
 </footer>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">

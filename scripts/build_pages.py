@@ -23,9 +23,11 @@ resto da tabela sai de math.comb e confere com a tabela oficial linha a linha.
 
 from __future__ import annotations
 
+import html
 import json
 import os
 import re
+import subprocess
 from math import comb
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
@@ -187,31 +189,185 @@ def hreflangs(path_by_lang: dict[str, str]) -> str:
 
 LANG_PATHS = {lg: f"/{lg}/" for lg in LANGS}
 
+# Caminho de cada idioma, o inglês incluído. O inglês fica na raiz, e por isso
+# não aparece em LANGS.
+ALL_LANG_PATHS = {"en": "/", **LANG_PATHS}
 
-def build_lang_pages(index_html: str) -> list[str]:
-    """Cada idioma ganha o app inteiro, com meta traduzida no HTML servido."""
+
+# ------------------------------------------------------- pré-renderização i18n
+
+def load_strings() -> dict[str, dict[str, str]]:
+    """A tabela de traduções do cliente, lida do próprio web/i18n.js.
+
+    O app traduz a página no navegador, percorrendo os [data-i18n]. O efeito
+    colateral era que as oito versões de idioma saíam do servidor com o mesmo
+    corpo em inglês — só o <head> era traduzido. O Google compara o conteúdo,
+    via oito páginas iguais, ignorava o canonical próprio de cada uma e
+    dobrava todas na raiz: "Duplicate, Google chose different canonical than
+    user" no Search Console, e uma busca em português caindo no título em
+    inglês.
+
+    Pré-renderizar exige as mesmas strings aqui. Importá-las do i18n.js em vez
+    de copiá-las evita a segunda cópia, que sairia do lugar no primeiro texto
+    que mudasse de um lado só.
+    """
+    dump = ("import('./web/i18n.js')"
+            ".then(m => process.stdout.write(JSON.stringify(m.STRINGS)))")
+    out = subprocess.run(["node", "-e", dump], cwd=ROOT,
+                         capture_output=True, text=True, check=True)
+    return json.loads(out.stdout)
+
+
+# Um elemento traduzível: <tag …data-i18n="chave"…>texto</tag>. `attrs` não
+# atravessa o `>`, então tags sem data-i18n nunca casam; o corpo é texto puro
+# em todos os casos do index.html, e por isso o fecho preguiçoso basta.
+# `data-i18n-ph` não casa aqui: a exigência do `=` logo depois do nome separa
+# os dois atributos.
+I18N_EL = re.compile(
+    r'<(?P<tag>[a-z0-9]+)(?P<attrs>[^>]*\sdata-i18n="(?P<key>[^"]+)"[^>]*)>'
+    r'(?P<body>.*?)</(?P=tag)>', re.S)
+
+I18N_PH = re.compile(
+    r'<(?P<tag>input|textarea)(?P<attrs>[^>]*\sdata-i18n-ph="(?P<key>[^"]+)"[^>]*)>')
+
+
+def localize(page: str, lang: str, strings: dict[str, dict[str, str]]) -> str:
+    """Escreve as traduções no HTML, mantendo os data-i18n no lugar.
+
+    Os atributos ficam: o app continua retraduzindo a página quando alguém
+    troca de idioma sem sair da URL. O que muda é o que chega pronto no
+    primeiro rastreamento — inclusive na raiz em inglês, onde metade dos
+    parágrafos (o lede, os quatro passos do "como funciona", o teste de Bell,
+    o rodapé) era elemento vazio esperando o JS.
+
+    Idempotente: reescreve o corpo do elemento inteiro, então rodar sobre uma
+    página já traduzida dá o mesmo resultado.
+    """
+    table = strings[lang]
+    fallback = strings["en"]
+
+    def text(key: str) -> str | None:
+        return table.get(key, fallback.get(key))
+
+    def element(m: re.Match) -> str:
+        v = text(m["key"])
+        if v is None:
+            return m.group(0)
+        return f'<{m["tag"]}{m["attrs"]}>{html.escape(v, quote=False)}</{m["tag"]}>'
+
+    def placeholder(m: re.Match) -> str:
+        v = text(m["key"])
+        if v is None:
+            return m.group(0)
+        attrs = re.sub(r'\s*placeholder="[^"]*"', "", m["attrs"])
+        return f'<{m["tag"]}{attrs} placeholder="{html.escape(v, quote=True)}">'
+
+    return I18N_PH.sub(placeholder, I18N_EL.sub(element, page))
+
+
+# ------------------------------------------------------------ links internos
+
+LANG_NAV_SLOT = re.compile(r'(<nav class="wrap langs" id="langs"[^>]*>).*?(</nav>)', re.S)
+LOTTERY_SLOT = re.compile(r'(<section id="lottery-links"[^>]*>).*?(</section>)', re.S)
+
+
+def lang_nav(current: str) -> str:
+    """Links de verdade entre as versões de idioma.
+
+    O seletor do cabeçalho é um <ul> montado por JS: o rastreador não o vê. Sem
+    estes links, /pt/, /es/… só existiam no sitemap e no hreflang — que declara
+    a relação entre as versões, mas não é caminho de rastreamento. URL sem link
+    de entrada é exatamente o que o Search Console reporta como "Discovered -
+    currently not indexed".
+    """
+    out = []
+    for lg, path in ALL_LANG_PATHS.items():
+        native = "English" if lg == "en" else LANGS[lg][0]
+        cur = ' aria-current="page"' if lg == current else ""
+        out.append(f'<a href="{path}" hreflang="{lg}" lang="{lg}"{cur}>{native}</a>')
+    return "\n    " + "\n    ".join(out) + "\n  "
+
+
+def lottery_links() -> str:
+    """Os cards das loterias na home em português.
+
+    Só em /pt/: as páginas são sobre modalidades da Caixa e estão em português.
+    """
+    cards = "\n".join(
+        f'        <a class="recent-card" href="/pt/{lot["slug"]}"><h4>{lot["name"]}</h4>'
+        f'<div class="meta">1 em {br(lot["odds"][0][1])} · {lot["min_label"]} · '
+        f'{brl(lot["odds"][0][2])}</div></a>'
+        for lot in LOTTERIES
+    )
+    return f"""
+    <div class="wrap">
+      <h2>Jogos das loterias da Caixa</h2>
+      <p class="sub">Cada modalidade tem sua página: como se joga, a chance real de
+        cada aposta e quanto custa o bilhete. As dezenas saem da mesma medição
+        quântica e vêm com a mesma prova dos sorteios aqui de cima.</p>
+      <div class="recent-grid">
+{cards}
+      </div>
+    </div>
+  """
+
+
+def internal_links(page: str, lg: str) -> str:
+    """Aponta a navegação da página para a própria versão de idioma.
+
+    Em /pt/ o cabeçalho e os CTAs apontavam para `/`, `/#create` e `/#how` — a
+    home em inglês. Quem trocava de idioma pelo Google e clicava em "Sortear"
+    voltava para o inglês, e cada uma dessas páginas gastava seus links
+    reforçando a raiz como canonical do grupo. É o mesmo sinal que fazia o
+    Google escolher `/` no lugar delas.
+    """
+    home = ALL_LANG_PATHS[lg]
+    page = page.replace('<a class="brand" href="/" data-nav>',
+                        f'<a class="brand" href="{home}" data-nav>')
+    return page.replace('href="/#', f'href="{home}#')
+
+
+def build_lang_pages(index_html: str, strings: dict) -> list[str]:
+    """Cada idioma ganha o app inteiro, traduzido já no HTML servido."""
     written = []
     for lg, (native, direction, og_locale) in LANGS.items():
         title, desc = LANG_META[lg]
-        html = index_html
+        page = localize(index_html, lg, strings)
 
-        html = html.replace('<html lang="en" dir="ltr">', f'<html lang="{lg}" dir="{direction}">')
-        html = re.sub(r"<title>.*?</title>", f"<title>{title}</title>", html, count=1, flags=re.S)
-        html = re.sub(r'(<meta name="description" id="meta-desc" content=")[^"]*(">)',
-                      lambda m: m.group(1) + desc + m.group(2), html, count=1)
-        html = html.replace(f'<link rel="canonical" href="{BASE}/">',
+        page = page.replace('<html lang="en" dir="ltr">', f'<html lang="{lg}" dir="{direction}">')
+        page = re.sub(r"<title>.*?</title>", f"<title>{title}</title>", page, count=1, flags=re.S)
+        page = re.sub(r'(<meta name="description" id="meta-desc" content=")[^"]*(">)',
+                      lambda m: m.group(1) + desc + m.group(2), page, count=1)
+        page = page.replace(f'<link rel="canonical" href="{BASE}/">',
                             f'<link rel="canonical" href="{BASE}/{lg}/">')
-        html = html.replace(f'<meta property="og:url" content="{BASE}/">',
+        page = page.replace(f'<meta property="og:url" content="{BASE}/">',
                             f'<meta property="og:url" content="{BASE}/{lg}/">\n'
                             f'<meta property="og:locale" content="{og_locale}">')
-        html = re.sub(r'<meta property="og:title" content="[^"]*">',
-                      f'<meta property="og:title" content="{title}">', html)
-        html = re.sub(r'<meta property="og:description" content="[^"]*">',
-                      f'<meta property="og:description" content="{desc}">', html)
+        page = re.sub(r'<meta property="og:title" content="[^"]*">',
+                      f'<meta property="og:title" content="{title}">', page)
+        page = re.sub(r'<meta property="og:description" content="[^"]*">',
+                      f'<meta property="og:description" content="{desc}">', page)
+        # O card do Twitter/X tem tags próprias, que ganham do og quando
+        # existem: sem estas duas, um link para /ru/ era anunciado em inglês.
+        page = re.sub(r'<meta name="twitter:title" content="[^"]*">',
+                      f'<meta name="twitter:title" content="{title}">', page)
+        page = re.sub(r'<meta name="twitter:description" content="[^"]*">',
+                      f'<meta name="twitter:description" content="{desc}">', page)
+
+        page = internal_links(page, lg)
+        # O rótulo do seletor. O JS o corrige, mas só depois de carregar: até
+        # lá a página em russo mostrava "English" no cabeçalho.
+        page = page.replace('<span id="lang-current">English</span>',
+                            f'<span id="lang-current">{native}</span>')
+        page = LANG_NAV_SLOT.sub(lambda m: m.group(1) + lang_nav(lg) + m.group(2), page)
+        # As páginas de loteria são em português e só a home portuguesa as
+        # oferece; nos outros idiomas a seção fica vazia e o CSS a remove.
+        if lg == "pt":
+            page = LOTTERY_SLOT.sub(lambda m: m.group(1) + lottery_links() + m.group(2), page)
 
         # O app lê isto antes de olhar o navegador, então a página abre no
         # idioma da URL mesmo para quem nunca visitou o site.
-        html = html.replace('<script type="module" src="/app.js"></script>',
+        page = page.replace('<script type="module" src="/app.js"></script>',
                             f'<script>window.__QDRAW_LANG__ = "{lg}";</script>\n'
                             '<script type="module" src="/app.js"></script>')
 
@@ -219,31 +375,75 @@ def build_lang_pages(index_html: str) -> list[str]:
         d = os.path.join(WEB, lg)
         os.makedirs(d, exist_ok=True)
         with open(os.path.join(d, "index.html"), "w", encoding="utf-8") as f:
-            f.write(html)
+            f.write(page)
         written.append(f"/{lg}/")
     return written
 
 
-def build_verify_page(index_html: str) -> None:
+def build_index(index_html: str, strings: dict) -> str:
+    """A raiz em inglês, com o mesmo tratamento das traduções.
+
+    A raiz é ao mesmo tempo molde e página publicada: build_pages.py a lê e a
+    reescreve no lugar. Pode, porque `localize` troca o corpo inteiro de cada
+    elemento — passar duas vezes dá o mesmo arquivo. O texto em inglês do HTML
+    passa a ser o de STRINGS.en, uma fonte só para os oito idiomas.
+    """
+    page = localize(index_html, "en", strings)
+    page = LANG_NAV_SLOT.sub(lambda m: m.group(1) + lang_nav("en") + m.group(2), page)
+    page = LOTTERY_SLOT.sub(lambda m: m.group(1) + m.group(2), page)
+    with open(os.path.join(WEB, "index.html"), "w", encoding="utf-8") as f:
+        f.write(page)
+    return page
+
+
+def build_verify_page(index_html: str, strings: dict) -> None:
     """`/verificar` como arquivo de verdade, não como fallback.
 
     Enquanto era servida pelo fallback de SPA, qualquer caminho inexistente
     devolvia esta mesma página com HTTP 200 — o "soft 404" que o Google
     reclama. Sendo um arquivo, ela resolve sozinha e o fallback pode virar 404.
+
+    Título e descrição em inglês porque o corpo servido é o inglês: a página
+    tem uma URL só para os oito idiomas (o verificador aceita qualquer código,
+    não há versão por idioma), e o texto que ela trazia estava em português
+    enquanto o HTML entregue estava em inglês. Título numa língua e conteúdo em
+    outra é o tipo de incoerência que derruba a página na avaliação. O slug
+    continua /verificar; é endereço, não conteúdo.
     """
-    title = "Verificar um sorteio — Quantum Draw"
-    desc = ("Confira você mesmo qualquer sorteio: a verificação roda no seu navegador e "
-            "busca o farol público direto no drand, sem passar pelos nossos servidores.")
-    html = index_html
-    html = re.sub(r"<title>.*?</title>", f"<title>{title}</title>", html, count=1, flags=re.S)
-    html = re.sub(r'(<meta name="description" id="meta-desc" content=")[^"]*(">)',
-                  lambda m: m.group(1) + desc + m.group(2), html, count=1)
-    html = html.replace(f'<link rel="canonical" href="{BASE}/">',
+    title = "Verify a draw — Quantum Draw"
+    desc = ("Check any draw yourself: verification runs in your own browser and fetches the "
+            "public beacon straight from drand, without going through our servers.")
+    page = localize(index_html, "en", strings)
+    page = re.sub(r"<title>.*?</title>", f"<title>{title}</title>", page, count=1, flags=re.S)
+    page = re.sub(r'(<meta name="description" id="meta-desc" content=")[^"]*(">)',
+                  lambda m: m.group(1) + desc + m.group(2), page, count=1)
+    page = page.replace(f'<link rel="canonical" href="{BASE}/">',
                         f'<link rel="canonical" href="{BASE}/verificar">')
-    html = html.replace(f'<meta property="og:url" content="{BASE}/">',
+    page = page.replace(f'<meta property="og:url" content="{BASE}/">',
                         f'<meta property="og:url" content="{BASE}/verificar">')
+
+    # O bloco de hreflang é da home: descreve o grupo /, /pt/, /es/… Copiado
+    # para cá, esta página declarava fazer parte de um grupo que não a lista de
+    # volta e onde ela não tem versão própria — anotação sem reciprocidade, que
+    # o Google descarta e que só confunde a escolha do canonical. /verificar
+    # tem uma URL para todos os idiomas e não pertence a grupo nenhum.
+    page = re.sub(r"<!-- hreflang:início.*?<!-- hreflang:fim -->\n", "", page, flags=re.S)
+
+    # og:title e og:description vinham da home. Quem compartilhasse o link do
+    # verificador anunciava a página de sorteios.
+    page = re.sub(r'<meta property="og:title" content="[^"]*">',
+                  f'<meta property="og:title" content="{title}">', page)
+    page = re.sub(r'<meta property="og:description" content="[^"]*">',
+                  f'<meta property="og:description" content="{desc}">', page)
+    page = re.sub(r'<meta name="twitter:title" content="[^"]*">',
+                  f'<meta name="twitter:title" content="{title}">', page)
+    page = re.sub(r'<meta name="twitter:description" content="[^"]*">',
+                  f'<meta name="twitter:description" content="{desc}">', page)
+
+    page = LANG_NAV_SLOT.sub(lambda m: m.group(1) + lang_nav("en") + m.group(2), page)
+    page = LOTTERY_SLOT.sub(lambda m: m.group(1) + m.group(2), page)
     with open(os.path.join(WEB, "verificar.html"), "w", encoding="utf-8") as f:
-        f.write(html)
+        f.write(page)
 
 
 NOT_FOUND = f"""<!doctype html>
@@ -525,10 +725,13 @@ def main() -> int:
     with open(os.path.join(WEB, "index.html"), encoding="utf-8") as f:
         index_html = f.read()
 
-    lang_paths = build_lang_pages(index_html)
-    print(f"idiomas: {len(lang_paths)} páginas")
+    strings = load_strings()
 
-    build_verify_page(index_html)
+    build_index(index_html, strings)
+    lang_paths = build_lang_pages(index_html, strings)
+    print(f"idiomas: {1 + len(lang_paths)} páginas (raiz em inglês + {len(lang_paths)})")
+
+    build_verify_page(index_html, strings)
     with open(os.path.join(WEB, "404.html"), "w", encoding="utf-8") as f:
         f.write(NOT_FOUND)
     print("avulsas: verificar.html, 404.html")

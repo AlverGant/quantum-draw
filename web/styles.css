@@ -142,7 +142,8 @@ nav.links a.on { color: var(--text); background: var(--bg-elev-2); }
   .brand svg { width: 23px; height: 23px; }
   nav.links { gap: 0; }
   nav.links a { padding: 6px 9px; font-size: .82rem; white-space: nowrap; }
-  nav.links a[href="/#how"] { display: none; }
+  /* Termina em #how, não é igual a "/#how": em /pt/ o link é /pt/#how. */
+  nav.links a[href$="#how"] { display: none; }
   .lang button { padding: 6px 10px; }
   #lang-current { display: none; }
 }
@@ -164,12 +165,16 @@ nav.links a.on { color: var(--text); background: var(--bg-elev-2); }
   min-width: 172px; display: none;
 }
 .lang.open ul { display: block; }
-.lang li button {
-  width: 100%; justify-content: flex-start;
-  background: none; border: none; border-radius: 7px; padding: 8px 11px;
+/* Os itens são <a> — cada idioma tem URL própria. A cor precisa vir daqui:
+   sendo link, herdariam o ciano da regra global de `a`, e os oito ficariam
+   com a cor que aqui marca só o idioma ativo. */
+.lang li a {
+  display: block; width: 100%;
+  color: var(--text-dim); border-radius: 7px; padding: 8px 11px;
+  font-size: .88rem;
 }
-.lang li button:hover { background: var(--bg-elev); }
-.lang li button[aria-current="true"] { color: var(--cyan); }
+.lang li a:hover { background: var(--bg-elev); color: var(--text); text-decoration: none; }
+.lang li a[aria-current="true"] { color: var(--cyan); }
 
 /* ------------------------------------------------------------------- hero */
 
@@ -659,6 +664,19 @@ footer {
 }
 footer .wrap { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between; }
 footer a { color: var(--text-dim); }
+
+/* Idiomas: linha discreta, mas com links de verdade — é por aqui que o
+   rastreador chega em /pt/, /es/… O seletor precisa do `footer` na frente:
+   `footer .wrap` acima também casa com esta nav e ganharia de `.langs` só,
+   espalhando os oito idiomas de ponta a ponta com o space-between de lá. */
+footer .langs { margin-top: 22px; gap: 6px 18px; justify-content: flex-start; font-size: .8rem; }
+footer .langs a { color: var(--text-faint); }
+footer .langs a:hover { color: var(--text-dim); }
+footer .langs a[aria-current] { color: var(--text-dim); font-weight: 600; }
+
+/* Só /pt/ recebe os cards das loterias; nos outros idiomas a seção fica vazia
+   e o padding de `section` abriria um buraco de 136px no meio da página. */
+#lottery-links:empty { display: none; }
 
 /* --------------------------------------------------------------- utilidades */
 

@@ -13,6 +13,21 @@ import { verifyDraw, parseSlug, STEP_KEYS } from './verify.js';
 
 let lang = detectLocale();
 
+// Caminho de cada idioma. O inglês mora na raiz: um /en/ teria conteúdo
+// idêntico a / e seria duplicata declarada.
+const langPath = (code) => (code === DEFAULT_LOCALE ? '/' : `/${code}/`);
+const LANG_HOMES = new Set(Object.keys(LOCALES).map(langPath));
+
+// Idioma que o servidor já entregou nesta URL, e o título e a descrição que
+// vieram com ele. build_pages.py escreve para cada idioma um título e uma
+// descrição pensados para a busca, mais específicos que os do menu; trocá-los
+// por STRINGS no primeiro quadro jogava fora justamente o texto que o Google
+// lê depois de renderizar. Só quando a pessoa troca de idioma sem sair da URL
+// é que passam a valer os de STRINGS.
+const SERVED_LANG = (typeof window !== 'undefined' && window.__QDRAW_LANG__) || DEFAULT_LOCALE;
+const SERVED_TITLE = document.title;
+const SERVED_DESC = document.getElementById('meta-desc')?.getAttribute('content') ?? '';
+
 function t(key, vars) {
   const table = STRINGS[lang] ?? STRINGS[DEFAULT_LOCALE];
   let s = table[key] ?? STRINGS[DEFAULT_LOCALE][key] ?? key;
@@ -24,8 +39,10 @@ function applyI18n() {
   const meta = LOCALES[lang];
   document.documentElement.lang = lang;
   document.documentElement.dir = meta.dir;
-  document.title = t('meta.title');
-  document.getElementById('meta-desc')?.setAttribute('content', t('meta.desc'));
+  const served = lang === SERVED_LANG;
+  document.title = served ? SERVED_TITLE : t('meta.title');
+  document.getElementById('meta-desc')
+    ?.setAttribute('content', served ? SERVED_DESC : t('meta.desc'));
 
   for (const el of document.querySelectorAll('[data-i18n]')) {
     el.textContent = t(el.dataset.i18n);
@@ -34,7 +51,7 @@ function applyI18n() {
     el.placeholder = t(el.dataset.i18nPh);
   }
   document.getElementById('lang-current').textContent = meta.native;
-  for (const b of document.querySelectorAll('#lang-list button')) {
+  for (const b of document.querySelectorAll('#lang-list [data-lang]')) {
     b.setAttribute('aria-current', String(b.dataset.lang === lang));
   }
   updateCount();
@@ -56,15 +73,27 @@ function buildLangMenu() {
   list.innerHTML = '';
   for (const [code, meta] of Object.entries(LOCALES)) {
     const li = document.createElement('li');
-    const b = document.createElement('button');
-    b.type = 'button';
-    b.dataset.lang = code;
-    b.textContent = `${meta.native} · ${meta.name}`;
-    b.addEventListener('click', () => {
-      setLang(code);
+    // Link, não botão: cada idioma tem URL própria e trocar no lugar deixava
+    // /pt/ mostrando francês — um estado que o canonical da página desmente e
+    // que ninguém consegue compartilhar. Sem data-nav de propósito: a troca
+    // precisa recarregar para o HTML vir traduzido do servidor.
+    const a = document.createElement('a');
+    a.href = langPath(code);
+    a.hreflang = code;
+    a.lang = code;
+    a.dataset.lang = code;
+    a.textContent = `${meta.native} · ${meta.name}`;
+    a.addEventListener('click', (e) => {
+      // /verificar e /s/<código> existem numa URL só. Sair delas para a home
+      // por causa de uma troca de idioma perderia o código que a pessoa
+      // acabou de colar, então ali a troca continua sendo no lugar.
+      if (!LANG_HOMES.has(location.pathname)) {
+        e.preventDefault();
+        setLang(code);
+      }
       document.getElementById('lang').classList.remove('open');
     });
-    li.appendChild(b);
+    li.appendChild(a);
     list.appendChild(li);
   }
 
@@ -650,7 +679,7 @@ async function renderDraw(slug) {
   } catch (err) {
     box.innerHTML = `<div class="card center">
       <p>${esc(err.message)}</p>
-      <a class="btn btn-ghost" href="/" data-nav>${esc(t('common.back'))}</a></div>`;
+      <a class="btn btn-ghost" href="${langPath(SERVED_LANG)}" data-nav>${esc(t('common.back'))}</a></div>`;
     return;
   }
 
@@ -664,7 +693,7 @@ async function renderDraw(slug) {
     box.innerHTML = `<div class="card center">
       <p>${esc(t('err.generic'))}</p>
       <p class="mono" style="color:var(--text-faint);font-size:.78rem">${esc(err.message)}</p>
-      <a class="btn btn-ghost" href="/" data-nav>${esc(t('common.back'))}</a>
+      <a class="btn btn-ghost" href="${langPath(SERVED_LANG)}" data-nav>${esc(t('common.back'))}</a>
     </div>`;
   }
 }

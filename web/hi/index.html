@@ -9,8 +9,14 @@
 <meta name="theme-color" content="#06070d">
 <link rel="canonical" href="https://sorteio.vynstream.com/hi/">
 
-<!-- Cada idioma tem página própria em /<lang>/, gerada por build_pages.py com
-     título e descrição traduzidos no HTML servido. O hreflang precisa apontar
+<!-- hreflang:início — build_pages.py recorta daqui até hreflang:fim ao gerar
+     /verificar, que tem uma URL só para os oito idiomas e não pertence a este
+     grupo. Copiado para lá, o bloco anunciava um conjunto que não a lista de
+     volta: anotação sem reciprocidade, descartada pelo Google e mais um ruído
+     na escolha do canonical.
+
+     Cada idioma tem página própria em /<lang>/, gerada por build_pages.py com
+     o conteúdo inteiro traduzido no HTML servido. O hreflang precisa apontar
      para ELAS.
 
      Apontava para /?lang=pt, e isso custava a indexação em português: a query
@@ -30,6 +36,7 @@
 <link rel="alternate" hreflang="hi" href="https://sorteio.vynstream.com/hi/">
 <link rel="alternate" hreflang="ar" href="https://sorteio.vynstream.com/ar/">
 <link rel="alternate" hreflang="ru" href="https://sorteio.vynstream.com/ru/">
+<!-- hreflang:fim -->
 
 <meta property="og:title" content="क्वांटम ड्रॉ — सार्वजनिक प्रमाण वाला ऑनलाइन ड्रॉ">
 <meta property="og:description" content="मुफ़्त ऑनलाइन लकी ड्रॉ, जिसके नंबर IBM के असली क्वांटम हार्डवेयर पर मापन से आते हैं, ऐसे प्रमाण के साथ जिसे कोई भी जाँच सकता है।">
@@ -41,8 +48,8 @@
 <meta property="og:image:height" content="630">
 <meta property="og:site_name" content="Quantum Draw">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Quantum Draw — provably fair raffles">
-<meta name="twitter:description" content="Raffles and lottery numbers from real quantum hardware, with a proof anyone can verify.">
+<meta name="twitter:title" content="क्वांटम ड्रॉ — सार्वजनिक प्रमाण वाला ऑनलाइन ड्रॉ">
+<meta name="twitter:description" content="मुफ़्त ऑनलाइन लकी ड्रॉ, जिसके नंबर IBM के असली क्वांटम हार्डवेयर पर मापन से आते हैं, ऐसे प्रमाण के साथ जिसे कोई भी जाँच सकता है।">
 <meta name="twitter:image" content="https://sorteio.vynstream.com/assets/og.png">
 
 <link rel="stylesheet" href="/styles.css">
@@ -78,7 +85,7 @@
 
 <header>
   <div class="wrap bar">
-    <a class="brand" href="/" data-nav>
+    <a class="brand" href="/hi/" data-nav>
       <svg width="27" height="27" viewBox="0 0 32 32" aria-hidden="true">
         <circle cx="16" cy="16" r="13" fill="none" stroke="#8b6cf6" stroke-width="2.2"/>
         <ellipse cx="16" cy="16" rx="13" ry="5" fill="none" stroke="#35e6d4" stroke-width="1.8"/>
@@ -89,16 +96,16 @@
     </a>
 
     <nav class="links">
-      <a href="/#create"   data-nav data-i18n="nav.create">Create</a>
-      <a href="/#how"      data-nav data-i18n="nav.how">How it works</a>
-      <a href="/verificar" data-nav data-i18n="nav.verify">Verify</a>
+      <a href="/hi/#create"   data-nav data-i18n="nav.create">बनाएँ</a>
+      <a href="/hi/#how"      data-nav data-i18n="nav.how">यह कैसे काम करता है</a>
+      <a href="/verificar" data-nav data-i18n="nav.verify">सत्यापित करें</a>
 
       <div class="lang" id="lang">
         <button type="button" id="lang-btn" aria-haspopup="true" aria-expanded="false">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20a15 15 0 0 1 0-20"/>
           </svg>
-          <span id="lang-current">English</span>
+          <span id="lang-current">हिन्दी</span>
         </button>
         <ul id="lang-list" role="menu"></ul>
       </div>
@@ -113,51 +120,53 @@
 
   <section class="hero">
     <div class="wrap">
-      <span class="eyebrow"><i class="dot"></i><span data-i18n="hero.badge">Live quantum entropy</span></span>
-      <h1><span data-i18n="hero.h1a">Raffles nobody can</span> <em data-i18n="hero.h1em">rig</em></h1>
-      <p class="lede" data-i18n="hero.lede"></p>
+      <span class="eyebrow"><i class="dot"></i><span data-i18n="hero.badge">लाइव क्वांटम एन्ट्रॉपी</span></span>
+      <h1><span data-i18n="hero.h1a">ऐसे ड्रॉ जिनमें कोई</span> <em data-i18n="hero.h1em">धाँधली नहीं कर सकता</em></h1>
+      <p class="lede" data-i18n="hero.lede">विजेता एक क्वांटम मापन से तय होता है, जो आपकी सूची बनने से पहले ही प्रतिबद्ध कर दिया जाता है और एक ऐसे सार्वजनिक बीकन से मिलाया जाता है जिसका अनुमान कोई नहीं लगा सकता। हर ड्रॉ के साथ ऐसा प्रमाण मिलता है जिसे आप स्वयं जाँच सकते हैं।</p>
       <div class="cta-row">
-        <a class="btn btn-primary" href="/#create" data-nav data-i18n="hero.cta">Run a draw</a>
-        <a class="btn btn-ghost" href="/verificar" data-nav data-i18n="hero.cta2">Verify a draw</a>
+        <a class="btn btn-primary" href="/hi/#create" data-nav data-i18n="hero.cta">ड्रॉ चलाएँ</a>
+        <a class="btn btn-ghost" href="/verificar" data-nav data-i18n="hero.cta2">ड्रॉ सत्यापित करें</a>
       </div>
 
       <div class="stats" id="stats">
-        <div class="stat-card"><span class="n" data-stat="unique_visitors">—</span><span class="k" data-i18n="stats.visitors">Visitors</span></div>
-        <div class="stat-card"><span class="n" data-stat="pageviews">—</span><span class="k" data-i18n="stats.pageviews">Page views</span></div>
-        <div class="stat-card"><span class="n" data-stat="draws_completed">—</span><span class="k" data-i18n="stats.draws">Draws held</span></div>
-        <div class="stat-card"><span class="n" data-stat="participants_total">—</span><span class="k" data-i18n="stats.participants">Entries</span></div>
-        <div class="stat-card"><span class="n" data-stat="countries">—</span><span class="k" data-i18n="stats.countries">Countries</span></div>
+        <div class="stat-card"><span class="n" data-stat="unique_visitors">—</span><span class="k" data-i18n="stats.visitors">आगंतुक</span></div>
+        <div class="stat-card"><span class="n" data-stat="pageviews">—</span><span class="k" data-i18n="stats.pageviews">पेज व्यू</span></div>
+        <div class="stat-card"><span class="n" data-stat="draws_completed">—</span><span class="k" data-i18n="stats.draws">हुए ड्रॉ</span></div>
+        <div class="stat-card"><span class="n" data-stat="participants_total">—</span><span class="k" data-i18n="stats.participants">प्रविष्टियाँ</span></div>
+        <div class="stat-card"><span class="n" data-stat="countries">—</span><span class="k" data-i18n="stats.countries">देश</span></div>
       </div>
     </div>
   </section>
 
   <section id="create">
     <div class="wrap">
-      <h2 data-i18n="form.h2">Create a draw</h2>
-      <p class="sub" data-i18n="form.sub"></p>
+      <h2 data-i18n="form.h2">ड्रॉ बनाएँ</h2>
+      <p class="sub" data-i18n="form.sub">यादृच्छिकता बनने से पहले ही आपकी सूची हैश से बंद कर दी जाती है। हमारे सहित कोई भी परिणाम पहले से नहीं जान सकता।</p>
 
       <div class="card form-card">
         <div id="pool-note"></div>
         <div id="form-error" class="alert alert-error hide"></div>
 
         <div class="modes" role="tablist">
-          <button type="button" class="mode on" data-mode="list" role="tab" data-i18n="mode.list">Draw from a list</button>
-          <button type="button" class="mode" data-mode="lottery" role="tab" data-i18n="mode.lottery">Generate lottery games</button>
+          <button type="button" class="mode on" data-mode="list" role="tab" data-i18n="mode.list">सूची से निकालें</button>
+          <button type="button" class="mode" data-mode="lottery" role="tab" data-i18n="mode.lottery">लॉटरी के नंबर बनाएँ</button>
         </div>
 
         <form id="draw-form" novalidate>
           <div class="field">
-            <label for="f-title" data-i18n="form.titleOpt">What is the draw for? (optional)</label>
-            <input type="text" id="f-title" maxlength="140" data-i18n-ph="form.titlePh">
+            <label for="f-title" data-i18n="form.titleOpt">ड्रॉ किस लिए है? (वैकल्पिक)</label>
+            <input type="text" id="f-title" maxlength="140" data-i18n-ph="form.titlePh" placeholder="जैसे: शो के 3 टिकट">
           </div>
 
           <!-- modo: sortear uma lista -->
           <div data-pane="list">
             <div class="field">
-              <label for="f-list" data-i18n="form.list">Participants, one per line</label>
-              <textarea id="f-list" data-i18n-ph="form.listPh"></textarea>
+              <label for="f-list" data-i18n="form.list">प्रतिभागी, हर पंक्ति में एक</label>
+              <textarea id="f-list" data-i18n-ph="form.listPh" placeholder="Ana
+Bruno
+Carla"></textarea>
               <div class="field-hint">
-                <span data-i18n="form.listHint"></span>
+                <span data-i18n="form.listHint">कोई नाम दोहराने पर उसे अधिक मौके मिलते हैं।</span>
                 <strong id="f-count" style="color:var(--cyan)"></strong>
               </div>
             </div>
@@ -166,46 +175,46 @@
           <!-- modo: gerar jogos de loteria -->
           <div data-pane="lottery" class="hide">
             <div class="field">
-              <label for="f-lottery" data-i18n="lot.game">Lottery</label>
+              <label for="f-lottery" data-i18n="lot.game">लॉटरी</label>
               <select id="f-lottery"></select>
               <span class="field-hint" id="f-lot-rule"></span>
             </div>
             <div class="row-2">
               <div class="field">
-                <label for="f-games" data-i18n="lot.games">How many games?</label>
+                <label for="f-games" data-i18n="lot.games">कितने खेल?</label>
                 <input type="number" id="f-games" min="1" max="100" value="1">
               </div>
               <div class="field">
-                <label for="f-picks" data-i18n="lot.picks">Numbers per game</label>
+                <label for="f-picks" data-i18n="lot.picks">प्रति खेल नंबर</label>
                 <input type="number" id="f-picks">
               </div>
             </div>
             <div class="field hide" id="f-extra-wrap">
-              <label for="f-extra" data-i18n="lot.extra">Clovers per game</label>
+              <label for="f-extra" data-i18n="lot.extra">प्रति खेल क्लोवर</label>
               <input type="number" id="f-extra" min="2" max="6" value="2">
             </div>
             <p class="field-hint cost-hint" id="f-cost"></p>
-            <p class="field-hint" style="margin-bottom:18px" data-i18n="lot.odds"></p>
+            <p class="field-hint" style="margin-bottom:18px" data-i18n="lot.odds">क्वांटम यादृच्छिकता आपकी संभावना नहीं बढ़ाती। कुछ भी नहीं बढ़ाता। यह सिर्फ़ यह प्रमाण देती है कि नंबर कब बने।</p>
           </div>
 
           <div class="row-2">
             <div class="field" data-pane="list">
-              <label for="f-winners" data-i18n="form.winners">How many winners?</label>
+              <label for="f-winners" data-i18n="form.winners">कितने विजेता?</label>
               <input type="number" id="f-winners" min="1" value="1">
             </div>
             <div class="field" style="display:flex;align-items:flex-end">
               <label class="check" style="margin-bottom:12px">
                 <input type="checkbox" id="f-public">
                 <span>
-                  <span data-i18n="form.public">Show on the public list</span>
-                  <span class="field-hint" style="margin-top:2px" data-i18n="form.publicHint"></span>
+                  <span data-i18n="form.public">सार्वजनिक सूची में दिखाएँ</span>
+                  <span class="field-hint" style="margin-top:2px" data-i18n="form.publicHint">दोनों ही स्थिति में प्रमाण पृष्ठ लिंक से खुला रहता है।</span>
                 </span>
               </label>
             </div>
           </div>
 
           <button type="submit" class="btn btn-primary" id="f-submit" style="width:100%">
-            <span data-i18n="form.submit">Lock the list and draw</span>
+            <span data-i18n="form.submit">सूची बंद करें और ड्रॉ करें</span>
           </button>
         </form>
       </div>
@@ -214,32 +223,39 @@
 
   <section id="how">
     <div class="wrap">
-      <h2 data-i18n="how.h2">How it works</h2>
-      <p class="sub" data-i18n="how.sub"></p>
+      <h2 data-i18n="how.h2">यह कैसे काम करता है</h2>
+      <p class="sub" data-i18n="how.sub">चार चरण, हर एक को कोई अजनबी भी जाँच सकता है।</p>
       <div class="steps">
-        <div class="step"><span class="num">01</span><h3 data-i18n="how.s1t"></h3><p data-i18n="how.s1b"></p></div>
-        <div class="step"><span class="num">02</span><h3 data-i18n="how.s2t"></h3><p data-i18n="how.s2b"></p></div>
-        <div class="step"><span class="num">03</span><h3 data-i18n="how.s3t"></h3><p data-i18n="how.s3b"></p></div>
-        <div class="step"><span class="num">04</span><h3 data-i18n="how.s4t"></h3><p data-i18n="how.s4b"></p></div>
+        <div class="step"><span class="num">01</span><h3 data-i18n="how.s1t">पहले से एकत्रित क्वांटम एन्ट्रॉपी</h3><p data-i18n="how.s1b">हम IBM हार्डवेयर के क्यूबिट्स को सुपरपोज़िशन में रखकर मापते हैं। परिणाम पल्स में बाँटे जाते हैं और किसी भी ड्रॉ से पहले प्रकाशित एक Merkle रूट के तहत सील कर दिए जाते हैं।</p></div>
+        <div class="step"><span class="num">02</span><h3 data-i18n="how.s2t">आपकी सूची प्रतिबद्ध हो जाती है</h3><p data-i18n="how.s2b">ड्रॉ बनाते समय हम सूची, विजेताओं की संख्या और उपयोग होने वाले भावी पल्स — तीनों का हैश बनाते हैं। बाद में कुछ भी बदलने से हैश टूट जाता है।</p></div>
+        <div class="step"><span class="num">03</span><h3 data-i18n="how.s3t">ऐसा बीकन जिसे कोई नियंत्रित नहीं करता</h3><p data-i18n="how.s3b">बीज में एक भावी drand राउंड भी मिलाया जाता है। प्रतिबद्धता के समय वह मौजूद ही नहीं होता, इसलिए हम भी अपने अनुकूल पल्स नहीं चुन सकते।</p></div>
+        <div class="step"><span class="num">04</span><h3 data-i18n="how.s4t">कोई भी दोबारा गणना कर सकता है</h3><p data-i18n="how.s4b">प्रमाण मिलने पर फेरबदल पूरी तरह नियतात्मक है। हमारा सत्यापक आपके ब्राउज़र में चलता है और बीकन सीधे drand से लाता है, हमारे सर्वर से नहीं।</p></div>
       </div>
     </div>
   </section>
 
   <section id="bell" class="hide">
     <div class="wrap">
-      <h2 data-i18n="bell.h2">The Bell test</h2>
-      <p class="sub" data-i18n="bell.sub"></p>
+      <h2 data-i18n="bell.h2">बेल परीक्षण</h2>
+      <p class="sub" data-i18n="bell.sub">हर पूल के साथ एक CHSH परीक्षण आता है, जो एंट्रॉपी इकट्ठा करने वाले उसी job में चलता है। अच्छी तरह बँटे हुए नंबर अपने आप में कुछ साबित नहीं करते — क्लासिकल जनरेटर भी वैसे ही नंबर देता है। यह वह मापन है जिसकी नकल कोई क्लासिकल जनरेटर नहीं कर सकता।</p>
       <div id="bell-body"></div>
     </div>
   </section>
 
   <section id="recent">
     <div class="wrap">
-      <h2 data-i18n="recent.h2">Recent draws</h2>
+      <h2 data-i18n="recent.h2">हाल के ड्रॉ</h2>
       <div class="recent-grid" id="recent-grid"></div>
     </div>
   </section>
 
+  <!-- Preenchido por build_pages.py, e só em /pt/ — as páginas de loteria são
+       conteúdo em português sobre a Caixa. Sem estes links elas eram órfãs:
+       existiam no sitemap e em nenhum outro lugar do site. É o que as deixava
+       em "Discovered - currently not indexed" no Search Console; URL que só
+       aparece no sitemap fica no fim da fila de rastreamento. Vazio nos outros
+       idiomas, e a regra :empty tira a seção do layout. -->
+  <section id="lottery-links"></section>
 
 </div>
 
@@ -256,16 +272,16 @@
 <div id="view-verify" class="hide">
   <section>
     <div class="wrap" style="max-width:820px">
-      <h2 data-i18n="verify.h2">Verify a draw</h2>
-      <p class="sub" data-i18n="verify.sub"></p>
+      <h2 data-i18n="verify.h2">ड्रॉ सत्यापित करें</h2>
+      <p class="sub" data-i18n="verify.sub">यह पूरी तरह आपके ब्राउज़र में चलता है। बीकन सीधे drand से लिया जाता है।</p>
 
       <div class="card">
         <div class="field">
-          <label for="v-input" data-i18n="verify.input">Draw link or code</label>
-          <input type="text" id="v-input" data-i18n-ph="verify.inputPh">
+          <label for="v-input" data-i18n="verify.input">ड्रॉ का लिंक या कोड</label>
+          <input type="text" id="v-input" data-i18n-ph="verify.inputPh" placeholder="जैसे k3m9x2vqb7">
         </div>
         <button class="btn btn-primary" id="v-run" style="width:100%">
-          <span data-i18n="verify.run">Run verification</span>
+          <span data-i18n="verify.run">सत्यापन चलाएँ</span>
         </button>
         <div id="v-steps" style="margin-top:24px"></div>
         <div id="v-verdict"></div>
@@ -278,12 +294,28 @@
 
 <footer>
   <div class="wrap">
-    <span data-i18n="footer.tag"></span>
+    <span data-i18n="footer.tag">IBM हार्डवेयर से क्वांटम एन्ट्रॉपी, Merkle रूट के तहत सील, drand सार्वजनिक बीकन के साथ मिश्रित।</span>
     <span>
       <a href="mailto:contact@stellardev.dev">contact@stellardev.dev</a>
       <span class="mono" style="opacity:.6;margin-inline-start:14px">qdraw-v1</span>
     </span>
   </div>
+
+  <!-- O seletor do cabeçalho é um menu montado por JS: confortável de usar,
+       invisível para o rastreador. Estes são os únicos links de verdade entre
+       as versões de idioma — sem eles, /pt/, /es/… só existiam no sitemap e no
+       hreflang, que sinaliza a relação mas não é caminho de rastreamento.
+       Gerado por build_pages.py a partir de LANGS. -->
+  <nav class="wrap langs" id="langs" aria-label="Language">
+    <a href="/" hreflang="en" lang="en">English</a>
+    <a href="/pt/" hreflang="pt" lang="pt">Português</a>
+    <a href="/es/" hreflang="es" lang="es">Español</a>
+    <a href="/fr/" hreflang="fr" lang="fr">Français</a>
+    <a href="/zh/" hreflang="zh" lang="zh">中文</a>
+    <a href="/hi/" hreflang="hi" lang="hi" aria-current="page">हिन्दी</a>
+    <a href="/ar/" hreflang="ar" lang="ar">العربية</a>
+    <a href="/ru/" hreflang="ru" lang="ru">Русский</a>
+  </nav>
 </footer>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
