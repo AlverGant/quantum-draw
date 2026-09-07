@@ -13,3 +13,7 @@ __pycache__/
 *.pyc
 .venv/
 venv/
+
+# Estudo estatístico das loterias da Caixa: 99 MB de cache e relatórios,
+# não faz parte do produto.
+estudo/
