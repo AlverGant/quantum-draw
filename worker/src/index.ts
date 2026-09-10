@@ -45,10 +45,13 @@ import {
   lotteryCommitHash,
   validate as validateLottery,
 } from './lottery.ts';
+import { anotarVisita } from './visitas.ts';
 
 export interface Env {
   DB: D1Database;
   ASSETS: Fetcher;
+  /** Analytics Engine: cidade e região de quem visita. Ver visitas.ts. */
+  VISITAS?: AnalyticsEngineDataset;
   ADMIN_TOKEN: string;
   VISITOR_SALT: string;
   LOCK_SECONDS: string;
@@ -176,6 +179,7 @@ async function handleVisit(request: Request, env: Env): Promise<Response> {
     }
   }
   await env.DB.batch(writes);
+  anotarVisita(request, env);
 
   return json({ ...(await readStats(env)), country, new_visitor: isNewToday });
 }

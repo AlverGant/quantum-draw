@@ -41,3 +41,9 @@ MAX_PARTICIPANTS = "20000"
 # Secrets (npx wrangler secret put NOME):
 #   ADMIN_TOKEN   — autoriza POST /api/admin/pool (usado pelo harvest.py)
 #   VISITOR_SALT  — sal do hash de visitante único; troque e a contagem reinicia
+
+# Cidade, região e operadora de quem visita, que o GraphQL do plano Free não
+# dá. Um dataset só para todos os sites vynstream; ver src/visitas.ts.
+[[analytics_engine_datasets]]
+binding = "VISITAS"
+dataset = "vynstream_visitas"
