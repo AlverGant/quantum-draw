@@ -510,7 +510,7 @@ NOT_FOUND = f"""<!doctype html>
 <footer>
   <div class="wrap">
     <span>Entropia quântica de hardware da IBM, selada sob raiz de Merkle, misturada a um farol público do drand.</span>
-    <span><a href="mailto:contact@stellardev.dev">contact@stellardev.dev</a></span>
+    <span><a href="https://github.com/AlverGant/quantum-draw" rel="noopener" style="margin-inline-end:14px">GitHub ↗</a><a href="mailto:contact@stellardev.dev">contact@stellardev.dev</a></span>
   </div>
 </footer>
 </body>
@@ -690,6 +690,7 @@ def lottery_page(lot: dict) -> str:
     <span>Entropia quântica de hardware da IBM, selada sob raiz de Merkle, misturada a um farol público do drand.</span>
     <span>
       <a href="https://quantum.vynstream.com" style="margin-inline-end:14px">Fatoração Quântica ↗</a>
+      <a href="https://github.com/AlverGant/quantum-draw" rel="noopener" style="margin-inline-end:14px">GitHub ↗</a>
       <a href="mailto:contact@stellardev.dev">contact@stellardev.dev</a>
     </span>
   </div>
