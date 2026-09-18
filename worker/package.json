@@ -8,6 +8,7 @@
     "deploy": "npm run build:protocol && npm run build:pages && npm test && wrangler deploy",
     "build:pages": "python3 ../scripts/build_pages.py",
     "build:protocol": "esbuild src/browser.ts --bundle --format=esm --target=es2022 --outfile=../web/protocol.js --banner:js=\"/* GERADO por: npm run build:protocol — a fonte e worker/src/browser.ts. Nao editar. */\"",
+    "funil": "wrangler d1 execute qdraw --remote --command \"SELECT dia, evento, n FROM funil WHERE dia >= date('now','-7 days') ORDER BY dia DESC, n DESC\"",
     "tail": "wrangler tail",
     "test": "node --experimental-strip-types --no-warnings --test test/*.test.mjs",
     "typecheck": "tsc --noEmit",

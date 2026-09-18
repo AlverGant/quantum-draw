@@ -4,6 +4,7 @@
  * Rotas (todas em /api/*; o resto é servido pelo binding de assets):
  *
  *   POST /api/visit               registra a visita e devolve as estatísticas
+ *   POST /api/funil               conta um gesto do funil (lista fechada)
  *   GET  /api/stats               contadores públicos
  *   GET  /api/pool                pool ativo (metadados + raiz de Merkle)
  *   GET  /api/draws               sorteios públicos recentes
@@ -46,12 +47,15 @@ import {
   validate as validateLottery,
 } from './lottery.ts';
 import { anotarVisita } from './visitas.ts';
+import { anotarFunil, eventoValido, type FunilEnv } from './funil.ts';
 
 export interface Env {
   DB: D1Database;
   ASSETS: Fetcher;
   /** Analytics Engine: cidade e região de quem visita. Ver visitas.ts. */
   VISITAS?: AnalyticsEngineDataset;
+  /** Freio do /api/funil, por IP. Ver funil.ts e wrangler.toml. */
+  LIMITE_FUNIL?: FunilEnv['LIMITE_FUNIL'];
   ADMIN_TOKEN: string;
   VISITOR_SALT: string;
   LOCK_SECONDS: string;
@@ -1054,7 +1058,7 @@ async function handleRecent(env: Env): Promise<Response> {
 
 // ------------------------------------------------------------------ router
 
-async function route(request: Request, env: Env): Promise<Response> {
+async function route(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
   const url = new URL(request.url);
   const path = url.pathname.replace(/\/+$/, '') || '/';
   const method = request.method.toUpperCase();
@@ -1074,6 +1078,23 @@ async function route(request: Request, env: Env): Promise<Response> {
   if (path === '/api/health') return json({ ok: true, time: now() });
   if (path === '/api/stats' && method === 'GET') return json(await readStats(env));
   if (path === '/api/visit' && method === 'POST') return handleVisit(request, env);
+
+  // Um gesto do funil. Responde 204 SEM esperar o banco: quem chamou é um
+  // sendBeacon de uma aba que pode estar fechando, e segurar a resposta não
+  // faria diferença para ele — mas `waitUntil` faz para nós, porque é ele que
+  // garante que a gravação sobreviva ao fim da requisição.
+  if (path === '/api/funil' && method === 'POST') {
+    let evento: unknown = '';
+    try {
+      evento = ((await request.json()) as { evento?: unknown })?.evento ?? '';
+    } catch {
+      // corpo torto: cai no evento inválido logo abaixo
+    }
+    if (!eventoValido(evento)) return fail(400, 'evento_desconhecido', 'Evento fora da lista.');
+    const quem = request.headers.get('CF-Connecting-IP') ?? 'sem-ip';
+    ctx.waitUntil(anotarFunil(env, evento, quem));
+    return new Response(null, { status: 204, headers: { 'cache-control': 'no-store' } });
+  }
   if (path === '/api/pool' && method === 'GET') return handlePool(env);
   // Catálogo das modalidades: o front monta os limites do formulário a partir
   // daqui, para não duplicar as regras da Caixa no cliente.
@@ -1166,7 +1187,7 @@ async function handleDrawPage(request: Request, env: Env, slug: string): Promise
 }
 
 export default {
-  async fetch(request: Request, env: Env, _ctx: ExecutionContext): Promise<Response> {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
 
     const drawPage = url.pathname.match(/^\/s\/([0-9a-z]{4,32})\/?$/i);
@@ -1183,7 +1204,7 @@ export default {
 
     if (!url.pathname.startsWith('/api/')) return env.ASSETS.fetch(request);
     try {
-      return await route(request, env);
+      return await route(request, env, ctx);
     } catch (e) {
       console.error('erro não tratado', e);
       return fail(500, 'erro_interno', (e as Error).message);

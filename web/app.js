@@ -157,11 +157,62 @@ document.addEventListener('click', async (e) => {
   if (!btn) return;
   try {
     await navigator.clipboard.writeText(btn.dataset.copy);
+    if (String(btn.dataset.copy).includes('/s/')) anotar('copiou_link');
     const old = btn.textContent;
     btn.textContent = t('common.copied');
     setTimeout(() => { btn.textContent = old; }, 1400);
   } catch { /* clipboard negado; o texto continua selecionável */ }
 });
+
+
+// ------------------------------------------------------------------ funil
+
+/**
+ * Um POST minúsculo por gesto, para saber o que as pessoas FAZEM aqui.
+ *
+ * A borda só sabe dizer que baixaram os arquivos e o banco só sabe contar os
+ * sorteios que nasceram. Entre os dois havia 573 sessões numa semana e UM
+ * sorteio criado, sem um único número dizendo onde as outras pararam.
+ *
+ * Nada no corpo identifica ninguém: vai o nome do evento e mais nada, e a
+ * lista fechada dos que valem está no worker (src/funil.ts).
+ *
+ * Cada evento vai UMA vez por aba. A pergunta é "quantas pessoas chegaram até
+ * aqui", não "quantas vezes mexeram no campo" — e contar cada tecla faria um
+ * minuto de brincadeira valer mais que cem visitas.
+ *
+ * sendBeacon e não fetch: o evento que mais importa é o da aba que está
+ * FECHANDO, e fetch numa aba que fecha é cancelado pelo navegador.
+ */
+const jaAnotei = new Set();
+function anotar(evento) {
+  if (jaAnotei.has(evento)) return;
+  jaAnotei.add(evento);
+  try {
+    const corpo = JSON.stringify({ evento });
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('/api/funil', new Blob([corpo], { type: 'application/json' }));
+    } else {
+      fetch('/api/funil', { method: 'POST', body: corpo, keepalive: true }).catch(() => {});
+    }
+  } catch { /* o funil é enfeite: nada na tela depende dele */ }
+}
+
+/**
+ * Quem foi embora ANTES da home aparecer. `pagehide` e `visibilitychange` os
+ * dois: no Android o navegador mata a aba em segundo plano sem passar por
+ * `pagehide`, e no desktop trocar de aba dispara `visibilitychange` sem que
+ * ninguém tenha ido embora — quem resolve a contradição é o anotar(), que só
+ * deixa passar a primeira vez.
+ */
+let homePronta = false;
+function vigiarDesistencia() {
+  const saiu = () => { if (!homePronta) anotar('saiu_carregando'); };
+  addEventListener('pagehide', saiu);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') saiu();
+  });
+}
 
 // -------------------------------------------------------------- contadores
 
@@ -348,7 +399,11 @@ const PRECO = {
 const BRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
 
 let lotteries = null;
-let mode = 'list';
+// Abre na loteria, não na lista. Das 24 criações que este site já teve, 18 são
+// jogos de loteria e TODAS as 4 desde que o público cresceu (12/09) também —
+// gerar um jogo não exige digitar nada, sortear uma lista exige digitar nomes
+// no celular. A aba que converte é esta; a outra fica a um toque de distância.
+let mode = 'lottery';
 
 /** Busca o catálogo uma única vez. Também usado pela página de resultado,
  *  que precisa dos limites para formatar as bolinhas. */
@@ -513,7 +568,8 @@ function resetSubmit() {
   submit.innerHTML = `<span>${esc(t(mode === 'lottery' ? 'lot.submit' : 'form.submit'))}</span>`;
 }
 
-function setMode(next) {
+function setMode(next, gesto = true) {
+  if (gesto) anotar(next === 'lottery' ? 'trocou_para_loteria' : 'trocou_para_lista');
   mode = next;
   for (const b of document.querySelectorAll('.modes .mode')) {
     b.classList.toggle('on', b.dataset.mode === next);
@@ -600,6 +656,21 @@ function initForm() {
   if (!form) return;
 
   list.addEventListener('input', updateCount);
+  list.addEventListener('focus', () => anotar('focou_lista'));
+
+  // O caminho sem digitação. Quem cai aqui vindo de um vídeo não tem uma lista
+  // de nomes para dar — mas dá para mostrar o que o site faz com uma, e daí
+  // trocar os nomes é edição, não redação. A lista sai das próprias traduções
+  // (form.listPh), então já vem certa nos oito idiomas.
+  document.getElementById('f-example')?.addEventListener('click', () => {
+    anotar('usou_exemplo');
+    const titulo = document.getElementById('f-title');
+    if (titulo && !titulo.value.trim()) titulo.value = t('form.exTitle');
+    list.value = t('form.listPh');
+    updateCount();
+    list.focus();
+    list.setSelectionRange(list.value.length, list.value.length);
+  });
   const picksInput = document.getElementById('f-picks');
   picksInput?.addEventListener('input', refreshRuleHint);
   picksInput?.addEventListener('change', clampPicks);
@@ -609,6 +680,13 @@ function initForm() {
   for (const id of ['f-games', 'f-extra']) {
     document.getElementById(id)?.addEventListener('input', refreshRuleHint);
   }
+  for (const id of ['f-lottery', 'f-games', 'f-picks', 'f-extra']) {
+    document.getElementById(id)?.addEventListener('change', () => anotar('mexeu_loteria'));
+  }
+
+  // A aba de loteria abre por padrão, e ela precisa do catálogo para montar o
+  // seletor. Sem isto o primeiro quadro do formulário viria vazio.
+  if (mode === 'lottery') loadLotteries();
   for (const b of document.querySelectorAll('.modes .mode')) {
     b.addEventListener('click', () => setMode(b.dataset.mode));
   }
@@ -637,6 +715,7 @@ function initForm() {
           winners_count: Number(document.getElementById('f-winners').value),
         };
 
+    anotar('submeteu');
     submit.disabled = true;
     submit.innerHTML = `<span class="spinner"></span><span>${esc(t('form.submitting'))}</span>`;
     try {
@@ -645,8 +724,10 @@ function initForm() {
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify(payload),
       });
+      anotar('criou');
       navigate(`/s/${draw.slug}`);
     } catch (err) {
+      anotar('erro_envio');
       errBox.textContent = err.message;
       errBox.classList.remove('hide');
       submit.disabled = false;
@@ -948,6 +1029,7 @@ function initVerify() {
   if (!run) return;
 
   run.addEventListener('click', async () => {
+    anotar('verificou');
     const slug = parseSlug(input.value);
     const stepsBox = document.getElementById('v-steps');
     const verdict = document.getElementById('v-verdict');
@@ -1055,6 +1137,8 @@ function render() {
   setRobots(Boolean(drawMatch));
 
   if (drawMatch) {
+    anotar('abriu_sorteio');
+    homePronta = true;   // chegou ao que veio ver; não é desistência
     draw.classList.remove('hide');
     renderDraw(drawMatch[1].toLowerCase());
     return;
@@ -1063,6 +1147,7 @@ function render() {
   // Só /verificar: é o caminho que existe como arquivo no servidor. Um alias
   // que só funcionasse na navegação interna daria 404 se alguém colasse a URL.
   if (path === '/verificar') {
+    homePronta = true;
     verify.classList.remove('hide');
     const s = new URLSearchParams(location.search).get('s');
     if (s) {
@@ -1073,6 +1158,8 @@ function render() {
   }
 
   home.classList.remove('hide');
+  homePronta = true;
+  anotar('home_pronta');
   resetSubmit();
   loadStats();
   loadPool();
@@ -1318,6 +1405,11 @@ function initField() {
 
 // ------------------------------------------------------------------ boot
 
+vigiarDesistencia();
+for (const a of document.querySelectorAll('.hero .cta-row a[href$="#create"]')) {
+  a.addEventListener('click', () => anotar('tocou_criar'));
+}
+
 buildLangMenu();
 applyI18n();
 initForm();
@@ -1330,7 +1422,7 @@ render();
 // teria de reencontrar o jogo sozinha.
 const wantedLottery = new URLSearchParams(location.search).get('lottery');
 if (wantedLottery) {
-  setMode('lottery');
+  setMode('lottery', false);
   loadLotteries().then(() => {
     const sel = document.getElementById('f-lottery');
     if (sel && lotteries?.[wantedLottery]) {
